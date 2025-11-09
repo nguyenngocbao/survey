@@ -1,5 +1,78 @@
 # Requirements Document - Hệ thống Khảo sát Học sinh
 
+> **Lưu ý**: Requirements đã được tổ chức lại thành các file riêng biệt cho từng màn hình.  
+> Xem thư mục `requirements/` để truy cập requirements chi tiết.
+
+## Cấu trúc Requirements Mới
+
+Requirements hiện được tổ chức theo từng màn hình/workflow riêng biệt:
+
+### 📁 Cấu trúc: `requirements/`
+
+```
+requirements/
+├── README.md                      # Hướng dẫn sử dụng
+├── 00-overview.md                 # Tổng quan hệ thống
+│
+├── 01-home-screen/                # Màn hình chính
+│   └── requirements.md
+│
+├── 02-individual-survey/          # Khảo sát Cá nhân
+│   ├── README.md                  # Overview
+│   ├── 01-personal-info.md
+│   ├── 02-academic-info.md
+│   ├── 03-interests.md
+│   └── 04-future-plans.md
+│
+├── 03-group-survey/               # Khảo sát Nhóm
+│   ├── README.md                  # Overview
+│   ├── 01-group-info.md
+│   ├── 02-members.md
+│   ├── 03-project-activities.md
+│   └── 04-evaluation.md
+│
+└── 04-admin/                      # Quản trị (Ứng dụng riêng)
+    ├── README.md                  # Overview
+    ├── 01-dashboard.md
+    ├── 02-survey-list.md
+    ├── 03-survey-detail.md
+    ├── 04-export.md
+    └── 05-authentication.md       # ⚠️ Cần implement
+```
+
+### 🏗️ Kiến trúc Hệ thống
+
+**Hai ứng dụng độc lập:**
+
+```
+survey/ (Port 3000)              admin-app/ (Port 3001)
+├── Trang chủ                    ├── Login (cần implement)
+├── Khảo sát cá nhân             ├── Dashboard
+├── Khảo sát nhóm                ├── Danh sách khảo sát
+└── APIs                         ├── Chi tiết khảo sát
+                                 ├── Xuất dữ liệu
+                                 └── Admin APIs
+        │                                │
+        └────────── MongoDB ─────────────┘
+                   (Shared)
+```
+
+### 📖 Hướng dẫn
+
+Xem file **requirements/README.md** để biết:
+- Cách sử dụng cấu trúc mới
+- Quy trình thay đổi requirements
+- Best practices
+- Ví dụ cụ thể
+
+## Lợi ích của Cấu trúc Mới
+
+✅ **Dễ quản lý**: Mỗi màn hình có file riêng, dễ tìm và chỉnh sửa  
+✅ **Collaboration tốt hơn**: Nhiều người có thể làm việc song song trên các màn hình khác nhau  
+✅ **Version control**: Git diff rõ ràng hơn khi chỉ thay đổi một file  
+✅ **Chi tiết hơn**: Mỗi file có đầy đủ thông tin về UI/UX, validation, API, data model  
+✅ **Dễ review**: Review từng màn hình một cách độc lập
+
 ## Introduction
 
 Hệ thống khảo sát học sinh là một ứng dụng web toàn diện được thiết kế để thu thập, quản lý và phân tích thông tin hồ sơ điện tử của học sinh. Hệ thống hỗ trợ hai loại khảo sát chính: khảo sát cá nhân và khảo sát nhóm, với giao diện quản trị dành cho giáo viên để theo dõi và xuất dữ liệu.

@@ -1,0 +1,27 @@
+{
+  "name": "Hệ thống Khảo sát - ĐHSP TP.HCM",
+  "short_name": "Khảo sát HCMUE",
+  "description": "Hệ thống khảo sát sinh viên Đại học Sư phạm Thành phố Hồ Chí Minh",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "theme_color": "#C41E3A",
+  "background_color": "#FFF5F5",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}

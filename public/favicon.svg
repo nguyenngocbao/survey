@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background with blue border like the logo -->
+  <rect width="100" height="100" fill="#000000" rx="8"/>
+  <rect x="5" y="5" width="90" height="90" fill="#000000" stroke="#5B9BD5" stroke-width="4" rx="6"/>
+  
+  <!-- Atom symbol (red) - centered -->
+  <g transform="translate(50, 35)">
+    <!-- Center dot -->
+    <circle cx="0" cy="0" r="3" fill="#E63946"/>
+    
+    <!-- Electron orbits -->
+    <ellipse cx="0" cy="0" rx="15" ry="8" fill="none" stroke="#E63946" stroke-width="2" transform="rotate(0)"/>
+    <ellipse cx="0" cy="0" rx="15" ry="8" fill="none" stroke="#E63946" stroke-width="2" transform="rotate(60)"/>
+    <ellipse cx="0" cy="0" rx="15" ry="8" fill="none" stroke="#E63946" stroke-width="2" transform="rotate(120)"/>
+    
+    <!-- Electrons -->
+    <circle cx="15" cy="0" r="2.5" fill="#E63946"/>
+    <circle cx="-7.5" cy="13" r="2.5" fill="#E63946"/>
+    <circle cx="-7.5" cy="-13" r="2.5" fill="#E63946"/>
+  </g>
+  
+  <!-- SP text (red) -->
+  <text x="50" y="70" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#E63946" text-anchor="middle">SP</text>
+  
+  <!-- Small blue accent at bottom -->
+  <rect x="30" y="85" width="40" height="3" fill="#5B9BD5" rx="1.5"/>
+</svg>
