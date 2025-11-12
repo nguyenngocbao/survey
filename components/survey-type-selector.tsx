@@ -152,12 +152,6 @@ export function SurveyTypeSelector() {
                 </div>
                 <span className="text-gray-700 font-medium text-left">Góc nhìn của bạn</span>
               </div>
-              <div className="flex items-center gap-3 group/item hover:translate-x-1 transition-transform">
-                <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-white text-xs">💭</span>
-                </div>
-                <span className="text-gray-700 font-medium text-left">Suy nghĩ riêng tư</span>
-              </div>
             </div>
 
             <Button 
