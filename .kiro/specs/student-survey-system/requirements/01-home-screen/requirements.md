@@ -110,9 +110,9 @@ THE Survey_System SHALL display a clean interface without university branding, f
 - Features:
   1. "Thông tin nhóm & thành viên" (bg-purple-500)
   2. "Hoạt động 1: Bí ẩn đại dương" (bg-violet-500)
-  3. "Hoạt động 2: Bí mật huyền sinh tồn" (bg-purple-400)
-  4. "Hoạt động 3: Dòng chảy thời gian" (bg-violet-300)
-  5. "Hoạt động 4: Con đường tơ lụa" (bg-violet-200)
+  3. "Hoạt động 2: Bí mật thuyền sinh tồn" (bg-purple-400)
+  4. "Hoạt động 3: Bản vẽ bí ẩn" (bg-violet-300)
+  5. "Hoạt động 4: Bản vẽ toả sáng" (bg-violet-200)
 - Text style: `text-sm text-gray-600`
 
 **Call-to-Action Button**:
