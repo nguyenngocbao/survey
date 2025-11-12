@@ -31,26 +31,162 @@ THE Survey_System SHALL display a clean interface without university branding, f
 ### Layout
 
 #### Header Section
-- **Simple icon**: Survey/document icon centered at top
-- **Title**: "Hệ thống khảo sát"
+- **Icon**: 
+  - Circular gradient background (blue to purple)
+  - Document/survey icon in white
+  - Size: w-20 h-20
+  - Positioned: Center, above title
+  
+- **Title**: "The X-File"
+  - Font: text-5xl md:text-6xl
+  - Style: font-serif italic
+  - Color: text-gray-800
+  
 - **Subtitle**: "Học sinh & Nhóm học tập"
-- **Description**: Brief explanation of survey types
+  - Font: text-2xl md:text-3xl
+  - Style: font-serif italic
+  - Color: text-gray-700
+  
+- **Description**: 
+  - Text: "Khám phá 'tệp tin X' (bí mật) chứa đựng mọi dự án và tầm nhìn."
+  - Font: text-lg
+  - Color: text-gray-600
+  - Max width: max-w-2xl mx-auto
+  - Style: leading-relaxed
 
 #### Survey Selection Cards
-- **Thứ tự hiển thị**: 
-  1. **Khảo sát Nhóm** (trái/trên) - Ưu tiên hiển thị trước
-  2. **Khảo sát Cá nhân** (phải/dưới)
-  
-- **Card Design**:
-  - Large clickable cards với shadow và hover effects
-  - Icon rõ ràng: 👥 (Nhóm), 👤 (Cá nhân)
-  - Title và description cho mỗi loại
-  - Feature list với bullet points
-  - Call-to-action button
 
-- **Màu sắc**:
-  - **Nhóm**: Purple gradient (from-purple-500 to-violet-600) - Màu nổi bật cho team
-  - **Cá nhân**: Teal gradient (from-teal-500 to-cyan-600) - Màu dịu cho individual
+**Thứ tự hiển thị**: 
+1. **Khảo sát Nhóm** (trái/trên) - Ưu tiên hiển thị trước
+2. **Khảo sát Cá nhân** (phải/dưới)
+
+**Layout**: 
+- Grid: `grid-cols-1 lg:grid-cols-2`
+- Gap: `gap-8`
+- Animation: fade-in with slide-in-from-bottom
+
+---
+
+### Card 1: Khảo sát Nhóm (Group Survey)
+
+**Container**:
+- Component: `<Card>`
+- Padding: `p-8`
+- Background: `bg-white/95 backdrop-blur-sm`
+- Shadow: `shadow-2xl` (hover: `shadow-3xl`)
+- Border: `border-0`
+- Hover effect: `hover:scale-105 transition-all duration-300`
+
+**Icon Section**:
+- Container: Circular div
+  - Size: `w-24 h-24`
+  - Background: `bg-gradient-to-r from-purple-500 to-violet-600`
+  - Position: `mx-auto` (centered)
+  - Hover: `group-hover:scale-110 transition-transform duration-300`
+- Icon: Team/group icon (3 people)
+  - SVG path: Multiple people icon
+  - Size: `w-12 h-12`
+  - Color: `text-white`
+
+**Title Section**:
+- Title: "Hoạt động nhóm"
+  - Font: `text-2xl font-bold`
+  - Color: `text-gray-800`
+  - Margin: `mb-3`
+
+**Description**:
+- Text: "Giải mã bản đồ tập thể. Đâu là điểm chung lớn nhất?"
+- Font: `text-gray-600`
+- Style: `leading-relaxed`
+- Margin: `mb-6`
+
+**Feature List**:
+- Container: `space-y-3`
+- Item style: `flex items-center gap-3`
+- Bullet: Colored circle dot
+  - Size: `w-2 h-2`
+  - Shape: `rounded-full`
+  - Colors: Alternating purple shades
+- Features:
+  1. "Thông tin nhóm & thành viên" (bg-purple-500)
+  2. "Hoạt động 1: Bí ẩn đại dương" (bg-violet-500)
+  3. "Hoạt động 2: Bí mật huyền sinh tồn" (bg-purple-400)
+  4. "Hoạt động 3: Dòng chảy thời gian" (bg-violet-300)
+  5. "Hoạt động 4: Con đường tơ lụa" (bg-violet-200)
+- Text style: `text-sm text-gray-600`
+
+**Call-to-Action Button**:
+- Component: `<Button>`
+- Width: `w-full`
+- Background: `bg-gradient-to-r from-purple-500 to-violet-600`
+- Hover: `hover:from-purple-600 hover:to-violet-700`
+- Text: "Bắt đầu khảo sát nhóm"
+  - Color: `text-white`
+  - Font: `font-semibold`
+  - Size: `text-lg`
+- Padding: `py-4`
+- Transition: `transition-all duration-300`
+- Action: Navigate to `/group`
+
+---
+
+### Card 2: Khảo sát Cá nhân (Individual Survey)
+
+**Container**:
+- Component: `<Card>`
+- Padding: `p-8`
+- Background: `bg-white/95 backdrop-blur-sm`
+- Shadow: `shadow-2xl` (hover: `shadow-3xl`)
+- Border: `border-0`
+- Hover effect: `hover:scale-105 transition-all duration-300`
+
+**Icon Section**:
+- Container: Circular div
+  - Size: `w-24 h-24`
+  - Background: `bg-gradient-to-r from-teal-500 to-cyan-600`
+  - Position: `mx-auto` (centered)
+  - Hover: `group-hover:scale-110 transition-transform duration-300`
+- Icon: Single person icon
+  - SVG path: User profile icon
+  - Size: `w-12 h-12`
+  - Color: `text-white`
+
+**Title Section**:
+- Title: "Hoạt động cá nhân"
+  - Font: `text-2xl font-bold`
+  - Color: `text-gray-800`
+  - Margin: `mb-3`
+
+**Description**:
+- Text: "Mở khóa tệp tin cảm xúc. Chỉ bạn thấy góc nhìn riêng."
+- Font: `text-gray-600`
+- Style: `leading-relaxed`
+- Margin: `mb-6`
+
+**Feature List**:
+- Container: `space-y-3`
+- Item style: `flex items-center gap-3`
+- Bullet: Colored circle dot
+  - Size: `w-2 h-2`
+  - Shape: `rounded-full`
+  - Colors: Alternating teal/cyan shades
+- Features:
+  1. "Thông tin cá nhân" (bg-teal-500)
+  2. "Góc nhìn của bạn" (bg-cyan-500)
+- Text style: `text-sm text-gray-600`
+
+**Call-to-Action Button**:
+- Component: `<Button>`
+- Width: `w-full`
+- Background: `bg-gradient-to-r from-teal-500 to-cyan-600`
+- Hover: `hover:from-teal-600 hover:to-cyan-700`
+- Text: "Bắt đầu khảo sát cá nhân"
+  - Color: `text-white`
+  - Font: `font-semibold`
+  - Size: `text-lg`
+- Padding: `py-4`
+- Transition: `transition-all duration-300`
+- Action: Navigate to `/individual`
 
 #### Background
 - Gradient background: `bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100`

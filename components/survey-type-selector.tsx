@@ -15,14 +15,13 @@ export function SurveyTypeSelector() {
         </div>
         
         <h1 className="text-5xl md:text-6xl font-serif italic text-gray-800 text-balance">
-          Hệ thống khảo sát
+          The X-File
         </h1>
         <h2 className="text-2xl md:text-3xl font-serif italic text-gray-700">
           Học sinh & Nhóm học tập
         </h2>
         <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-          Chọn loại khảo sát phù hợp với mục đích của bạn. Khảo sát cá nhân để tìm hiểu bản thân, 
-          khảo sát nhóm để đánh giá hoạt động tập thể.
+          Khám phá 'tệp tin X' (bí mật) chứa đựng mọi dự án và tầm nhìn.
         </p>
       </div>
 
@@ -40,10 +39,10 @@ export function SurveyTypeSelector() {
             
             <div>
               <h3 className="text-2xl font-bold text-gray-800 mb-3">
-                Khảo sát nhóm
+                Hoạt động nhóm
               </h3>
               <p className="text-gray-600 leading-relaxed mb-6">
-                Khảo sát về hoạt động nhóm, dự án chung, đánh giá thành viên và hiệu quả làm việc nhóm
+                Giải mã bản đồ tập thể. Đâu là điểm chung lớn nhất?
               </p>
             </div>
 
@@ -54,15 +53,19 @@ export function SurveyTypeSelector() {
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 bg-violet-500 rounded-full"></div>
-                <span>Dự án & hoạt động nhóm</span>
+                <span>Hoạt động 1: Bí ẩn đại dương</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
-                <span>Đánh giá hiệu quả làm việc</span>
+                <span>Hoạt động 2: Bí mật huyền sinh tồn</span>
               </div>
               <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-violet-400 rounded-full"></div>
-                <span>Ảnh hoạt động & thành tích nhóm</span>
+                <div className="w-2 h-2 bg-violet-300 rounded-full"></div>
+                <span>Hoạt động 3: Dòng chảy thời gian</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 bg-violet-200 rounded-full"></div>
+                <span>Hoạt động 4: Con đường tơ lụa</span>
               </div>
             </div>
 
@@ -86,29 +89,21 @@ export function SurveyTypeSelector() {
             
             <div>
               <h3 className="text-2xl font-bold text-gray-800 mb-3">
-                Khảo sát cá nhân
+                Hoạt động cá nhân
               </h3>
               <p className="text-gray-600 leading-relaxed mb-6">
-                Khảo sát về thông tin cá nhân, học tập, sở thích và kế hoạch tương lai của từng học sinh
+                Mở khóa tệp tin cảm xúc. Chỉ bạn thấy góc nhìn riêng.
               </p>
             </div>
 
             <div className="space-y-3 text-sm text-gray-600">
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
-                <span>Thông tin cá nhân & học tập</span>
+                <span>Thông tin cá nhân</span>
               </div>
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 bg-cyan-500 rounded-full"></div>
-                <span>Sở thích & hoạt động cá nhân</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-teal-400 rounded-full"></div>
-                <span>Kế hoạch nghề nghiệp tương lai</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
-                <span>Upload ảnh cá nhân & hoạt động</span>
+                <span>Góc nhìn của bạn</span>
               </div>
             </div>
 
