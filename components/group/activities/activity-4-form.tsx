@@ -1,242 +1,210 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useState } from "react"
+import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
 
 interface Activity4FormData {
-  question1: {
-    strengths: string
-    improvements: string
-  }
-  question2: {
-    learnings: string
-  }
-  question3: {
-    lesson: string
-    futureImprovement: string
-  }
+  question1: string
+  question2: string
+  question3: string
 }
 
 export default function Activity4Form() {
-  const router = useRouter()
   const [formData, setFormData] = useState<Activity4FormData>({
-    question1: { strengths: '', improvements: '' },
-    question2: { learnings: '' },
-    question3: { lesson: '', futureImprovement: '' }
+    question1: "",
+    question2: "",
+    question3: "",
   })
 
-  const handleTextChange = (field: string) => (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const keys = field.split('.')
-    if (keys.length === 2) {
-      setFormData(prev => ({
-        ...prev,
-        [keys[0]]: {
-          ...prev[keys[0] as keyof Activity4FormData],
-          [keys[1]]: e.target.value
-        }
-      }))
-    }
+  const handleChange = (field: keyof Activity4FormData, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    // Validation
-    if (formData.question1.strengths.length < 50) {
-      alert('Câu 1: Điểm mạnh phải có ít nhất 50 ký tự')
-      return
-    }
-    
-    if (formData.question1.improvements.length < 40) {
-      alert('Câu 1: Điểm cần cải thiện phải có ít nhất 40 ký tự')
-      return
-    }
-    
-    if (formData.question2.learnings.length < 60) {
-      alert('Câu 2: Học hỏi từ nhóm khác phải có ít nhất 60 ký tự')
-      return
-    }
-    
-    if (formData.question3.lesson.length < 40) {
-      alert('Câu 3: Bài học quan trọng phải có ít nhất 40 ký tự')
-      return
-    }
-    
-    if (formData.question3.futureImprovement.length < 40) {
-      alert('Câu 3: Cách cải tiến phải có ít nhất 40 ký tự')
-      return
+
+    // Validation - minimum 50 characters for each question
+    const minLength = 50
+    const questions = [
+      { field: "question1", label: "Câu hỏi 1" },
+      { field: "question2", label: "Câu hỏi 2" },
+      { field: "question3", label: "Câu hỏi 3" },
+    ]
+
+    for (const q of questions) {
+      if (formData[q.field as keyof Activity4FormData].length < minLength) {
+        alert(`${q.label}: Vui lòng nhập ít nhất ${minLength} ký tự`)
+        return
+      }
     }
 
     // TODO: Submit to API
-    console.log('Activity 4 data:', formData)
-    
-    // Navigate back
-    router.push('/group')
+    console.log("Activity 4 data:", formData)
+
+    alert("Đã hoàn thành Hoạt động 4!")
+    window.location.href = "/group"
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Header */}
-        <div className="mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => router.push('/group')}
-            className="mb-4"
+      <div className="container mx-auto px-4 py-8 max-w-5xl">
+        {/* Back Button */}
+        <a
+          href="/group"
+          className="inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 transition-colors font-medium mb-6"
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            ← Quay lại
-          </Button>
-          
-          <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-8 shadow-lg">
-            <div className="text-5xl mb-4">✨</div>
-            <h1 className="text-3xl font-bold mb-2">Hoạt động 4: Bản vẽ toả sáng</h1>
-            <p className="text-blue-100">Tìm hiểu bản vẽ phát ra ánh sáng kỳ diệu</p>
-          </div>
-        </div>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          Quay lại
+        </a>
 
-        {/* Instruction Box */}
-        <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded">
-          <div className="flex items-start">
-            <span className="text-2xl mr-3">✨</span>
-            <p className="text-gray-700">
-              Hoạt động tổng kết và phản tư. Nhóm nhìn lại toàn bộ quá trình, 
-              đánh giá sản phẩm và học hỏi từ các nhóm khác.
-            </p>
+        {/* Header */}
+        <Card className="p-8 bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 mb-6">
+          <div className="flex items-center gap-4">
+            <div className="text-5xl">✨</div>
+            <div>
+              <h1 className="text-3xl font-bold">
+                Hoạt động 4: Bản vẽ toả sáng
+              </h1>
+            </div>
           </div>
-        </div>
+        </Card>
+
+        {/* Purpose Box */}
+        <Card className="p-6 bg-blue-50 border-l-4 border-blue-500 mb-6">
+          <div className="flex items-start gap-3">
+            <span className="text-3xl">🎯</span>
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-3 text-lg">
+                I. Mục tiêu
+              </h3>
+              <ul className="text-gray-700 space-y-2">
+                <li>
+                  • Trình bày và phản biện quy trình thiết kế thuyền.
+                </li>
+                <li>
+                  • Đánh giá kết quả thử nghiệm và đề xuất cải tiến.
+                </li>
+                <li>
+                  • Hoàn thiện hồ sơ kỹ thuật số và mô hình thuyền đáp ứng tiêu
+                  chí: nổi - ổn định - an toàn - thân thiện môi trường.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </Card>
+
+        {/* Tasks Section */}
+        <Card className="p-6 bg-cyan-50 border-l-4 border-cyan-500 mb-8">
+          <div className="flex items-start gap-3">
+            <span className="text-3xl">📝</span>
+            <div>
+              <h3 className="font-semibold text-gray-800 text-lg">
+                II. Nhiệm vụ học tập
+              </h3>
+            </div>
+          </div>
+        </Card>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Câu 1 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Câu 1 - Điểm mạnh & cải tiến</CardTitle>
-              <CardDescription>
-                <div className="space-y-1">
-                  <p>Nhóm bạn nêu 1-2 điểm mạnh và 1 điểm cần cải thiện của sản phẩm cuối.</p>
-                  <div className="text-sm text-gray-500 italic mt-2 space-y-1">
-                    <p>• Điểm mạnh: thuyền nổi ổn định, thiết kế thẩm mỹ.</p>
-                    <p>• Cải thiện: đáy thuyền hơi mỏng, cần gia cố.</p>
-                  </div>
-                </div>
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          {/* Question 1 */}
+          <Card className="p-6">
+            <div className="space-y-4">
               <div>
-                <Label htmlFor="q1-strengths">1-2 điểm mạnh của sản phẩm *</Label>
-                <Textarea
-                  id="q1-strengths"
-                  rows={4}
-                  placeholder="Nêu các điểm mạnh của thiết kế thuyền..."
-                  value={formData.question1.strengths}
-                  onChange={handleTextChange('question1.strengths')}
-                  required
-                  className="mt-1"
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  {formData.question1.strengths.length} / 50 ký tự tối thiểu
+                <h3 className="text-xl font-bold text-blue-600 mb-3">
+                  Quy trình thiết kế và kết quả thử nghiệm:
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  Hãy mô tả ngắn gọn các bước thiết kế bạn thực hiện, kết quả
+                  thử nghiệm nổi/chìm và các cải tiến đã đề xuất.
                 </p>
               </div>
-              
               <div>
-                <Label htmlFor="q1-improvements">1 điểm cần cải thiện *</Label>
                 <Textarea
-                  id="q1-improvements"
-                  rows={4}
-                  placeholder="Nêu điểm cần cải thiện và cách khắc phục..."
-                  value={formData.question1.improvements}
-                  onChange={handleTextChange('question1.improvements')}
+                  value={formData.question1}
+                  onChange={(e) => handleChange("question1", e.target.value)}
+                  rows={8}
+                  placeholder="Nhập câu trả lời của nhóm..."
                   required
-                  className="mt-1"
+                  className="resize-none"
                 />
-                <p className="text-sm text-gray-500 mt-1">
-                  {formData.question1.improvements.length} / 40 ký tự tối thiểu
+                <p className="text-xs text-gray-500 mt-1">
+                  {formData.question1.length} / 50 ký tự tối thiểu
                 </p>
               </div>
-            </CardContent>
+            </div>
           </Card>
 
-          {/* Câu 2 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Câu 2 - Học hỏi từ nhóm khác</CardTitle>
-              <CardDescription>
-                <div className="space-y-1">
-                  <p>Nhóm bạn học được gì từ ý tưởng hoặc phản biện của nhóm khác?</p>
-                  <p className="text-sm text-gray-500 italic mt-2">
-                    Ví dụ: nhóm khác dùng vật liệu tái chế giúp thuyền nhẹ hơn → nhóm mình sẽ thử áp dụng.
-                  </p>
-                </div>
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+          {/* Question 2 */}
+          <Card className="p-6">
+            <div className="space-y-4">
               <div>
-                <Label htmlFor="q2-learnings">Học hỏi từ nhóm khác *</Label>
-                <Textarea
-                  id="q2-learnings"
-                  rows={5}
-                  placeholder="Ghi lại những gì nhóm học được từ các nhóm khác..."
-                  value={formData.question2.learnings}
-                  onChange={handleTextChange('question2.learnings')}
-                  required
-                  className="mt-1"
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  {formData.question2.learnings.length} / 60 ký tự tối thiểu
+                <h3 className="text-xl font-bold text-blue-600 mb-3">
+                  Vai trò AI trong thiết kế và hoàn thiện hồ sơ:
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  AI đã hỗ trợ bạn những gì trong quá trình thiết kế, phân tích
+                  và lập hồ sơ kỹ thuật?
                 </p>
               </div>
-            </CardContent>
+              <div>
+                <Textarea
+                  value={formData.question2}
+                  onChange={(e) => handleChange("question2", e.target.value)}
+                  rows={8}
+                  placeholder="Nhập câu trả lời của nhóm..."
+                  required
+                  className="resize-none"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {formData.question2.length} / 50 ký tự tối thiểu
+                </p>
+              </div>
+            </div>
           </Card>
 
-          {/* Câu 3 */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Câu 3 - Bài học & cải tiến cá nhân</CardTitle>
-              <CardDescription>
-                <div className="space-y-1">
-                  <p>Nêu 1 bài học quan trọng và 1 cách cải tiến nếu làm lại.</p>
-                  <p className="text-sm text-gray-500 italic mt-2">
-                    Ví dụ: học cách viết prompt AI chính xác hơn để bản vẽ 3D chi tiết hơn.
-                  </p>
-                </div>
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          {/* Question 3 */}
+          <Card className="p-6">
+            <div className="space-y-4">
               <div>
-                <Label htmlFor="q3-lesson">1 bài học quan trọng nhất *</Label>
-                <Textarea
-                  id="q3-lesson"
-                  rows={4}
-                  placeholder="Bài học quan trọng nhất từ dự án này..."
-                  value={formData.question3.lesson}
-                  onChange={handleTextChange('question3.lesson')}
-                  required
-                  className="mt-1"
-                />
-                <p className="text-sm text-gray-500 mt-1">
-                  {formData.question3.lesson.length} / 40 ký tự tối thiểu
+                <h3 className="text-xl font-bold text-blue-600 mb-3">
+                  Hồ sơ kỹ thuật và đánh giá sản phẩm:
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  Hồ sơ kỹ thuật của nhóm bạn có đầy đủ các bản vẽ, nhật ký, mô
+                  hình và đáp ứng tiêu chí kỹ thuật không? Hãy tự đánh giá.
                 </p>
               </div>
-              
               <div>
-                <Label htmlFor="q3-improvement">1 cách cải tiến nếu làm lại *</Label>
                 <Textarea
-                  id="q3-improvement"
-                  rows={4}
-                  placeholder="Nếu làm lại, nhóm sẽ cải tiến như thế nào..."
-                  value={formData.question3.futureImprovement}
-                  onChange={handleTextChange('question3.futureImprovement')}
+                  value={formData.question3}
+                  onChange={(e) => handleChange("question3", e.target.value)}
+                  rows={8}
+                  placeholder="Nhập câu trả lời của nhóm..."
                   required
-                  className="mt-1"
+                  className="resize-none"
                 />
-                <p className="text-sm text-gray-500 mt-1">
-                  {formData.question3.futureImprovement.length} / 40 ký tự tối thiểu
+                <p className="text-xs text-gray-500 mt-1">
+                  {formData.question3.length} / 50 ký tự tối thiểu
                 </p>
               </div>
-            </CardContent>
+            </div>
           </Card>
 
           {/* Submit Button */}
@@ -244,7 +212,7 @@ export default function Activity4Form() {
             <Button
               type="submit"
               size="lg"
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700"
+              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-6 text-lg"
             >
               Hoàn thành hoạt động
             </Button>

@@ -77,19 +77,19 @@ export function SurveyTypeSelector() {
                 <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
                   <span className="text-white text-xs">🌊</span>
                 </div>
-                <span className="text-gray-700 font-medium text-left">Hoạt động 1: Bí ẩn đại dương</span>
+                <span className="text-gray-700 font-medium text-left">Hoạt động 1: Bí ẩn dòng nước</span>
               </div>
               <div className="flex items-center gap-3 group/item hover:translate-x-1 transition-transform">
                 <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-violet-500 rounded-lg flex items-center justify-center flex-shrink-0">
                   <span className="text-white text-xs">🔮</span>
                 </div>
-                <span className="text-gray-700 font-medium text-left">Hoạt động 2: Bí mật thuyền sinh tồn</span>
+                <span className="text-gray-700 font-medium text-left">Hoạt động 2: Khám phá thủy lực</span>
               </div>
               <div className="flex items-center gap-3 group/item hover:translate-x-1 transition-transform">
                 <div className="w-8 h-8 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-lg flex items-center justify-center flex-shrink-0">
                   <span className="text-white text-xs">🗺️</span>
                 </div>
-                <span className="text-gray-700 font-medium text-left">Hoạt động 3: Bản vẽ bí ẩn</span>
+                <span className="text-gray-700 font-medium text-left">Hoạt động 3: Thiết kế kỳ diệu</span>
               </div>
               <div className="flex items-center gap-3 group/item hover:translate-x-1 transition-transform">
                 <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 const activities = [
   {
     number: 1,
-    title: "Bí ẩn đại dương",
+    title: "Bí ẩn dòng nước",
     description: "Khám phá những bí ẩn dưới đáy đại dương",
     icon: "🌊",
     color: "violet",
@@ -15,8 +15,8 @@ const activities = [
   },
   {
     number: 2,
-    title: "Bí mật thuyền sinh tồn",
-    description: "Giải mã những bí mật huyền bí của sự sống",
+    title: "Khám phá thủy lực",
+    description: "Tìm hiểu nguyên lý nổi và thiết kế thuyền",
     icon: "🔮",
     color: "purple",
     route: "/group/activity-2",
@@ -24,8 +24,8 @@ const activities = [
   },
   {
     number: 3,
-    title: "Bản vẽ bí ẩn",
-    description: "Khám phá bản vẽ chứa đựng những bí mật",
+    title: "Thiết kế kỳ diệu",
+    description: "Tạo bản vẽ kỹ thuật hoàn chỉnh với AI",
     icon: "🗺️",
     color: "indigo",
     route: "/group/activity-3",

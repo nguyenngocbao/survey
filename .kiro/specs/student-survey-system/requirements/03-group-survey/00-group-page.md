@@ -273,22 +273,22 @@ WHEN group data is updated, THE Survey_System SHALL display real-time statistics
 
 ### 4 Activities
 
-**Activity 1: Bí ẩn đại dương**
+**Activity 1: Bí ẩn dòng nước**
 - Color: `violet-500`
 - Icon: 🌊
 - Description: "Khám phá những bí ẩn dưới đáy đại dương"
 - Route: `/group/activity-1`
 
-**Activity 2: Bí mật thuyền sinh tồn**
+**Activity 2: Khám phá thủy lực**
 - Color: `purple-500`
 - Icon: 🔮
-- Description: "Giải mã những bí mật huyền bí của sự sống"
+- Description: "Tìm hiểu nguyên lý nổi và thiết kế thuyền"
 - Route: `/group/activity-2`
 
-**Activity 3: Bản vẽ bí ẩn**
+**Activity 3: Thiết kế kỳ diệu**
 - Color: `indigo-500`
 - Icon: 🗺️
-- Description: "Khám phá bản vẽ chứa đựng những bí mật"
+- Description: "Tạo bản vẽ kỹ thuật hoàn chỉnh với AI"
 - Route: `/group/activity-3`
 
 **Activity 4: Bản vẽ toả sáng**

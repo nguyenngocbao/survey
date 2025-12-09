@@ -4,346 +4,305 @@ import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
+
+interface Activity2FormData {
+  question1: string
+  question2: string
+  question3: string
+  question4: string
+  question5: string
+}
 
 export function Activity2Form() {
-  const [question1, setQuestion1] = useState("")
-  const [question2, setQuestion2] = useState(
-    Array(3).fill({ principle: "", example: "" })
-  )
-  const [prompt1, setPrompt1] = useState("")
-  const [result1, setResult1] = useState("")
-  const [prompt2, setPrompt2] = useState("")
-  const [result2, setResult2] = useState("")
-  const [comparison, setComparison] = useState("")
-  const [selectedIdeas, setSelectedIdeas] = useState<string[]>([])
-  const [question4, setQuestion4] = useState("")
-  const [question5, setQuestion5] = useState("")
+  const [formData, setFormData] = useState<Activity2FormData>({
+    question1: "",
+    question2: "",
+    question3: "",
+    question4: "",
+    question5: "",
+  })
 
-  const updatePrinciple = (index: number, field: "principle" | "example", value: string) => {
-    const newQ2 = [...question2]
-    newQ2[index] = { ...newQ2[index], [field]: value }
-    setQuestion2(newQ2)
-  }
-
-  const toggleIdea = (idea: string) => {
-    setSelectedIdeas(prev => 
-      prev.includes(idea) 
-        ? prev.filter(i => i !== idea)
-        : [...prev, idea]
-    )
+  const handleChange = (field: keyof Activity2FormData, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (question1.length < 80) {
-      alert("Câu 1: Vui lòng nhập ít nhất 80 ký tự")
-      return
+
+    // Validation - minimum 50 characters for each question
+    const minLength = 50
+    const questions = [
+      { field: "question1", label: "Câu 1" },
+      { field: "question2", label: "Câu 2" },
+      { field: "question3", label: "Câu 3" },
+      { field: "question4", label: "Câu 4" },
+      { field: "question5", label: "Câu 5" },
+    ]
+
+    for (const q of questions) {
+      if (formData[q.field as keyof Activity2FormData].length < minLength) {
+        alert(`${q.label}: Vui lòng nhập ít nhất ${minLength} ký tự`)
+        return
+      }
     }
 
-    const allFilled = question2.every(item => 
-      item.principle.length >= 10 && item.example.length >= 20
-    )
-    if (!allFilled) {
-      alert("Câu 2: Vui lòng điền đầy đủ 3 nguyên tắc và ví dụ")
-      return
-    }
-
-    if (!prompt1 || !result1 || !comparison) {
-      alert("Câu 3: Vui lòng điền đầy đủ prompt, kết quả và so sánh")
-      return
-    }
-
-    if (selectedIdeas.length === 0) {
-      alert("Câu 3: Vui lòng chọn ít nhất 1 ý tưởng khả thi")
-      return
-    }
-
-    if (question4.length < 150) {
-      alert("Câu 4: Vui lòng nhập ít nhất 150 ký tự")
-      return
-    }
-
-    if (question5.length < 150) {
-      alert("Câu 5: Vui lòng nhập ít nhất 150 ký tự")
-      return
-    }
+    // TODO: Submit to API
+    console.log("Activity 2 data:", formData)
 
     alert("Đã hoàn thành Hoạt động 2!")
     window.location.href = "/group"
   }
 
   return (
-    <div className="w-full max-w-4xl space-y-6">
-      {/* Back Button */}
-      <a
-        href="/group"
-        className="inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 transition-colors font-medium"
-      >
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-        </svg>
-        Quay lại
-      </a>
-
-      {/* Header */}
-      <Card className="p-6 bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0">
-        <div className="flex items-center gap-4">
-          <div className="text-4xl">🔮</div>
-          <div>
-            <h1 className="text-2xl font-bold">Hoạt động 2: Bí mật thuyền sinh tồn</h1>
-            <p className="text-pur
-ple-100">Giải mã những bí mật huyền bí của sự sống</p>
-          </div>
-        </div>
-      </Card>
-
-      {/* Instruction Box */}
-      <Card className="p-4 bg-purple-50 border-l-4 border-purple-500">
-        <div className="flex gap-3">
-          <div className="text-2xl">🔮</div>
-          <p className="text-sm text-gray-700">
-            Hoạt động theo nhóm 3-5 bạn. Quan sát video/hình ảnh, thảo luận, điền câu trả lời trực tiếp. 
-            Sử dụng AI như trợ lý gợi ý, nhưng nhóm quyết định giữ hay điều chỉnh kết quả.
-          </p>
-        </div>
-      </Card>
-
-      <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Question 1 */}
-        <Card className="p-6">
-          <div className="space-y-4">
-            <div>
-              <Label className="text-lg font-bold text-gray-800">
-                Câu 1 - Phân tích yếu tố nổi và cân bằng
-              </Label>
-              <div className="mt-2 space-y-1 text-gray-700">
-                <p>Quan sát các loại thuyền: đánh cá, du thuyền, thuyền chở hàng.</p>
-                <p>Những yếu tố nào giúp thuyền nổi tốt và cân bằng ổn định?</p>
-                <p>Theo nhóm, hình dạng, vật liệu và cấu trúc nào quan trọng nhất?</p>
-                <p>Giải thích ngắn gọn lý do khoa học.</p>
-              </div>
-            </div>
-            <Textarea
-              value={question1}
-              onChange={(e) => setQuestion1(e.target.value)}
-              rows={6}
-              placeholder="Nhóm ghi 3-5 yếu tố + lý do khoa học..."
-              required
-            />
-            <p className="text-xs text-gray-500">{question1.length} / 80 ký tự tối thiểu</p>
-          </div>
-        </Card>
-
-        {/* Question 2 */}
-        <Card className="p-6">
-          <div className="space-y-4">
-            <div>
-              <Label className="text-lg font-bold text-gray-800">
-                Câu 2 - Nguyên tắc viết prompt AI
-              </Label>
-              <p className="text-gray-700 mt-2">
-                Nhóm đề xuất 3 nguyên tắc viết prompt hiệu quả để AI gợi ý ý tưởng thuyền, kèm ví dụ minh họa ngắn.
-              </p>
-              <div className="text-sm text-gray-500 italic mt-2 space-y-1">
-                <p>• Ngắn gọn + rõ mục tiêu → 'Gợi ý 3 kiểu thuyền từ vật liệu tái chế'</p>
-                <p>• Cụ thể + chi tiết → 'Thuyền nhỏ, nổi tốt, dùng gỗ và chai nhựa'</p>
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              {question2.map((item, index) => (
-                <div key={index} className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div>
-                    <Label className="text-sm">Nguyên tắc {index + 1}</Label>
-                    <Input
-                      value={item.principle}
-                      onChange={(e) => updatePrinciple(index, "principle", e.target.value)}
-                      placeholder={`Nguyên tắc ${index + 1}`}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <Label className="text-sm">Ví dụ minh họa</Label>
-                    <Input
-                      value={item.example}
-                      onChange={(e) => updatePrinciple(index, "example", e.target.value)}
-                      placeholder="Ví dụ prompt cụ thể"
-                      required
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Card>
-
-        {/* Question 3 */}
-        <Card className="p-6">
-          <div className="space-y-4">
-            <div>
-              <Label className="text-lg font-bold text-gray-800">
-                Câu 3 - Thử prompt & so sánh kết quả
-              </Label>
-              <div className="mt-2 space-y-1 text-gray-700">
-                <p>Nhập 1-2 prompt khác nhau vào AI (ngắn, dài, cụ thể, mơ hồ).</p>
-                <p>Ghi lại kết quả: hình dạng, vật liệu, ưu điểm.</p>
-                <p>So sánh và thảo luận: tại sao kết quả khác nhau?</p>
-                <p>Nhóm tick chọn các ý tưởng khả thi nhất để đưa vào bước tiếp theo.</p>
-              </div>
-            </div>
-
-            {/* Prompt 1 */}
-            <div className="space-y-3 p-4 bg-purple-50 rounded-lg">
-              <div>
-                <Label>Prompt thứ nhất *</Label>
-                <Textarea
-                  value={prompt1}
-                  onChange={(e) => setPrompt1(e.target.value)}
-                  rows={3}
-                  placeholder="Nhập prompt đầu tiên..."
-                  required
-                />
-              </div>
-              <div>
-                <Label>Kết quả từ AI (hình dạng, vật liệu, ưu điểm) *</Label>
-                <Textarea
-                  value={result1}
-                  onChange={(e) => setResult1(e.target.value)}
-                  rows={4}
-                  placeholder="Ghi lại kết quả AI trả về..."
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Prompt 2 (Optional) */}
-            <div className="space-y-3 p-4 bg-purple-50 rounded-lg">
-              <div>
-                <Label>Prompt thứ hai (tùy chọn)</Label>
-                <Textarea
-                  value={prompt2}
-                  onChange={(e) => setPrompt2(e.target.value)}
-                  rows={3}
-                  placeholder="Nhập prompt thứ hai..."
-                />
-              </div>
-              {prompt2 && (
-                <div>
-                  <Label>Kết quả từ AI</Label>
-                  <Textarea
-                    value={result2}
-                    onChange={(e) => setResult2(e.target.value)}
-                    rows={4}
-                    placeholder="Ghi lại kết quả AI trả về..."
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Comparison */}
-            <div>
-              <Label>Tại sao kết quả khác nhau? *</Label>
-              <Textarea
-                value={comparison}
-                onChange={(e) => setComparison(e.target.value)}
-                rows={5}
-                placeholder="Nhóm thảo luận và phân tích..."
-                required
-              />
-            </div>
-
-            {/* Selected Ideas */}
-            <div>
-              <Label>Tick chọn ý tưởng khả thi *</Label>
-              <div className="space-y-2 mt-2">
-                {["Ý tưởng từ Prompt 1", "Ý tưởng từ Prompt 2", "Ý tưởng kết hợp"].map((idea) => (
-                  <div key={idea} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={idea}
-                      checked={selectedIdeas.includes(idea)}
-                      onCheckedChange={() => toggleIdea(idea)}
-                    />
-                    <label htmlFor={idea} className="text-sm text-gray-700 cursor-pointer">
-                      {idea}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Question 4 */}
-        <Card className="p-6">
-          <div className="space-y-4">
-            <div>
-              <Label className="text-lg font-bold text-gray-800">
-                Câu 4 - Chốt ý tưởng sơ bộ
-              </Label>
-              <div className="mt-2 space-y-1 text-gray-700">
-                <p>Dựa trên các yếu tố khoa học, kết quả AI, và tiêu chí đánh giá ở Hoạt động 1:</p>
-                <p>Nhóm chọn 1 ý tưởng khả thi nhất.</p>
-                <p>Mô tả hoặc vẽ sơ bộ (bằng tay hoặc AI): hình dạng, vật liệu, nguyên lý nổi, ưu điểm nổi bật.</p>
-              </div>
-            </div>
-            <div>
-              <Label>Mô tả chi tiết ý tưởng thuyền *</Label>
-              <Textarea
-                value={question4}
-                onChange={(e) => setQuestion4(e.target.value)}
-                rows={8}
-                placeholder="Hình dạng, vật liệu, nguyên lý nổi, ưu điểm..."
-                required
-              />
-              <p className="text-xs text-gray-500 mt-1">{question4.length} / 150 ký tự tối thiểu</p>
-            </div>
-            <div>
-              <Label>Tải lên hình vẽ hoặc phác thảo (tùy chọn)</Label>
-              <Input
-                type="file"
-                accept="image/*,.pdf"
-                className="mt-1"
-              />
-              <p className="text-xs text-gray-500 mt-1">Chấp nhận: JPG, PNG, PDF. Tối đa 5MB</p>
-            </div>
-          </div>
-        </Card>
-
-        {/* Question 5 */}
-        <Card className="p-6">
-          <div className="space-y-4">
-            <div>
-              <Label className="text-lg font-bold text-gray-800">
-                Câu 5 - Phản biện & cải thiện
-              </Label>
-              <div className="mt-2 space-y-1 text-gray-700">
-                <p>Giải thích tại sao ý tưởng này khả thi, khoa học, an toàn và phù hợp tiêu chí đánh giá.</p>
-                <p>Nếu được thử nghiệm thực tế, nhóm sẽ chỉnh sửa gì để tối ưu hơn?</p>
-              </div>
-            </div>
-            <Textarea
-              value={question5}
-              onChange={(e) => setQuestion5(e.target.value)}
-              rows={8}
-              placeholder="Nhóm phản biện và đề xuất cải thiện..."
-              required
-            />
-            <p className="text-xs text-gray-500">{question5.length} / 150 ký tự tối thiểu</p>
-          </div>
-        </Card>
-
-        {/* Submit Button */}
-        <Button
-          type="submit"
-          className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold py-6 text-lg"
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
+      <div className="container mx-auto px-4 py-8 max-w-5xl">
+        {/* Back Button */}
+        <a
+          href="/group"
+          className="inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 transition-colors font-medium mb-6"
         >
-          Hoàn thành hoạt động
-        </Button>
-      </form>
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          Quay lại
+        </a>
+
+        {/* Header */}
+        <Card className="p-8 bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 mb-6">
+          <div className="flex items-center gap-4">
+            <div className="text-5xl">🔮</div>
+            <div>
+              <h1 className="text-3xl font-bold">
+                Hoạt động 2: Khám phá thủy lực
+              </h1>
+            </div>
+          </div>
+        </Card>
+
+        {/* Purpose Box */}
+        <Card className="p-6 bg-purple-50 border-l-4 border-purple-500 mb-6">
+          <div className="flex items-start gap-3">
+            <span className="text-3xl">🎯</span>
+            <div>
+              <h3 className="font-semibold text-gray-800 mb-3 text-lg">
+                I. Mục tiêu
+              </h3>
+              <ul className="text-gray-700 space-y-2">
+                <li>
+                  • Hình thành trực giác về lực đẩy Archimedes, thể tích chiếm
+                  nước và ảnh hưởng của hình dạng đến độ nổi.
+                </li>
+                <li>
+                  • Nhận diện vật liệu, kết cấu và nguyên lý kỹ thuật của
+                  thuyền.
+                </li>
+                <li>
+                  • Sử dụng AI để mở rộng phương án thiết kế và lựa chọn giải
+                  pháp tối ưu.
+                </li>
+              </ul>
+            </div>
+          </div>
+        </Card>
+
+        {/* Tasks Section */}
+        <Card className="p-6 bg-blue-50 border-l-4 border-blue-500 mb-8">
+          <div className="flex items-start gap-3">
+            <span className="text-3xl">📝</span>
+            <div>
+              <h3 className="font-semibold text-gray-800 text-lg">
+                II. Nhiệm vụ học tập
+              </h3>
+            </div>
+          </div>
+        </Card>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Question 1 */}
+          <Card className="p-6">
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-xl font-bold text-purple-600 mb-3">
+                  Câu 1 – Nguyên lý nổi
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  Nếu trọng lượng thuyền không đổi, bạn sẽ điều chỉnh hình dạng
+                  và thể tích chiếm nước như thế nào để thuyền nổi tốt và ổn
+                  định?
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Trả lời:
+                </label>
+                <Textarea
+                  value={formData.question1}
+                  onChange={(e) => handleChange("question1", e.target.value)}
+                  rows={6}
+                  placeholder="Nhập câu trả lời của nhóm..."
+                  required
+                  className="resize-none"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {formData.question1.length} / 50 ký tự tối thiểu
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Question 2 */}
+          <Card className="p-6">
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-xl font-bold text-purple-600 mb-3">
+                  Câu 2 – Kết cấu và vật liệu
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  Bạn sẽ chọn vật liệu và kết cấu ra sao để thuyền vừa nhẹ,
+                  bền, vừa an toàn? Giải thích dựa trên nguyên lý kỹ thuật đã
+                  học.
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Trả lời:
+                </label>
+                <Textarea
+                  value={formData.question2}
+                  onChange={(e) => handleChange("question2", e.target.value)}
+                  rows={6}
+                  placeholder="Nhập câu trả lời của nhóm..."
+                  required
+                  className="resize-none"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {formData.question2.length} / 50 ký tự tối thiểu
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Question 3 */}
+          <Card className="p-6">
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-xl font-bold text-purple-600 mb-3">
+                  Câu 3 – Quy trình thiết kế
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  Mô tả 3 bước quan trọng để biến ý tưởng thuyền từ prototype
+                  đất sét thành phương án thiết kế AI, nêu công cụ hỗ trợ từng
+                  bước.
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Trả lời:
+                </label>
+                <Textarea
+                  value={formData.question3}
+                  onChange={(e) => handleChange("question3", e.target.value)}
+                  rows={6}
+                  placeholder="Nhập câu trả lời của nhóm..."
+                  required
+                  className="resize-none"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {formData.question3.length} / 50 ký tự tối thiểu
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Question 4 */}
+          <Card className="p-6">
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-xl font-bold text-purple-600 mb-3">
+                  Câu 4 – So sánh và đánh giá
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  Khi so sánh prototype đất sét và phương án AI, bạn nhận thấy
+                  điểm mạnh – điểm yếu của mỗi phương án, và đâu là cơ sở để
+                  chọn giải pháp tối ưu?
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Trả lời:
+                </label>
+                <Textarea
+                  value={formData.question4}
+                  onChange={(e) => handleChange("question4", e.target.value)}
+                  rows={6}
+                  placeholder="Nhập câu trả lời của nhóm..."
+                  required
+                  className="resize-none"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {formData.question4.length} / 50 ký tự tối thiểu
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Question 5 */}
+          <Card className="p-6">
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-xl font-bold text-purple-600 mb-3">
+                  Câu 5 – Phác thảo phương án tối ưu
+                </h3>
+                <p className="text-gray-700 leading-relaxed">
+                  Mô tả thiết kế thuyền cuối cùng: hình dạng, vật liệu, kết
+                  cấu, và các ưu điểm nổi bật liên quan đến nổi, ổn định và an
+                  toàn.
+                </p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Trả lời:
+                </label>
+                <Textarea
+                  value={formData.question5}
+                  onChange={(e) => handleChange("question5", e.target.value)}
+                  rows={6}
+                  placeholder="Nhập câu trả lời của nhóm..."
+                  required
+                  className="resize-none"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {formData.question5.length} / 50 ký tự tối thiểu
+                </p>
+              </div>
+            </div>
+          </Card>
+
+          {/* Submit Button */}
+          <div className="flex justify-end pt-4">
+            <Button
+              type="submit"
+              size="lg"
+              className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-8 py-6 text-lg"
+            >
+              Hoàn thành hoạt động
+            </Button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }
