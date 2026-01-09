@@ -1,10 +1,10 @@
-# Hoạt động 3: Bản vẽ bí ẩn
+# Hoạt động 3: Thiết kế kỳ diệu
 
 ## User Story
 
 **As a** Student_User  
-**I want to** complete Activity 3 form about mysterious maps  
-**So that** my group can document our exploration of secret blueprints
+**I want to** complete Activity 3 form to create complete technical drawings using AI  
+**So that** my group can develop boat design from idea to 3D, 2D, and CAD drawings
 
 ## Acceptance Criteria (EARS Format)
 
@@ -23,153 +23,119 @@ WHEN a Student_User clicks back button, THE Survey_System SHALL navigate back to
 
 **Header**:
 - Icon: 🗺️
-- Title: "Hoạt động 3: Bản vẽ bí ẩn"
-- Subtitle: "Khám phá bản vẽ chứa đựng những bí mật"
+- Title: "Hoạt động 3: Thiết kế kỳ diệu"
 - Color: Indigo gradient (`from-indigo-500 to-indigo-600`)
 
 **Back Button**:
 - Text: "← Quay lại"
 - Navigate to: `/group`
 
-### Hướng dẫn chung
+### Mục tiêu
 
-**Instruction Box** (hiển thị ở đầu form):
+**Purpose Box**:
 - Background: `bg-indigo-50 border-l-4 border-indigo-500`
-- Icon: 🗺️
-- Text: "Hoạt động theo nhóm 3-5 học sinh. Sử dụng AI hỗ trợ tạo bản vẽ 3D, 2D, CAD. Chèn hình minh họa và lưu file để chuẩn bị chế tạo."
+- Icon: 🎯
+- Title: "I. Mục tiêu"
+- Content:
+  - "Tạo phác thảo thiết kế thuyền ban đầu đạt tiêu chí: nổi – ổn định – an toàn – thân thiện môi trường."
+  - "Ứng dụng AI (Gemini, ChatGPT, Meshy AI) để tạo chuỗi bản vẽ kỹ thuật hoàn chỉnh: Ý tưởng → 3D → 2D → CAD."
+  - "Hình thành tư duy thiết kế kỹ thuật dựa trên nguyên lý, kết cấu, vật liệu đã phân tích."
+
+### Nhiệm vụ học tập
+
+**Tasks Box**:
+- Background: `bg-blue-50 border-l-4 border-blue-500`
+- Icon: 📝
+- Title: "II. Nhiệm vụ học tập"
 
 ### Form Fields
 
-**Câu 1: Chốt ý tưởng cuối cùng**
+**Section 1: Phát triển ý tưởng**
 
-- **Label**: "Câu 1 - Chốt ý tưởng cuối cùng"
-- **Context**:
-  - Text: "Chọn ý tưởng nhóm để phát triển bản vẽ kỹ thuật."
-  - Text: "Mô tả hình dáng, vật liệu, nguyên lý nổi, ưu điểm."
-- **Example hint**:
-  - Text: "Ví dụ: đáy cong, thân rộng, gỗ + chai nhựa, nổi tốt, ổn định."
-  - Style: `text-sm text-gray-500 italic`
-- **Input Section 1**: Description
-  - **Mô tả ý tưởng** (Textarea, 6 rows)
-    - Placeholder: "Hình dáng, vật liệu, nguyên lý nổi, ưu điểm..."
-    - Required: Yes
-    - Validation: Minimum 100 characters
-- **Input Section 2**: Image Upload
-  - **Upload hình minh họa** (File upload)
-    - Label: "Tải lên hình minh họa ý tưởng"
-    - Accept: Images (jpg, png, pdf)
-    - Max size: 5MB
-    - Optional
-    - Preview: Show uploaded image
+- **Label**: "1. Phát triển ý tưởng"
+- **Prompt AI định hướng** (5 fields):
+  - **Mục đích** (Text input)
+  - **Bối cảnh** (Text input)
+  - **Tiêu chí** (Text input)
+  - **Hình dạng cơ bản** (Text input)
+  - **Chức năng đặc biệt** (Text input)
+- **Prompt của tôi** (Textarea, 6 rows)
+  - Placeholder: "Nhập prompt đầy đủ của bạn..."
+  - Required: Yes
+  - Validation: Minimum 50 characters
+- **Ảnh minh họa ý tưởng** (File upload)
+  - Accept: Images (jpg, png)
+  - Multiple: Yes
+  - Optional
 
 ---
 
-**Câu 2: Lập kế hoạch AI**
+**Section 2: Dựng mô hình 3D và tạo bản vẽ 2D (Pha 3.2 – 15 phút)**
 
-- **Label**: "Câu 2 - Lập kế hoạch AI"
-- **Context**:
-  - Text: "Xác định 3 bản vẽ: 3D, 2D, CAD."
-  - Text: "Viết prompt AI ngắn gọn, rõ ràng."
-- **Example hints**:
-  - "3D: 'Thuyền đáy cong, thân rộng, vật liệu gỗ + chai nhựa, nổi tốt.'"
-  - "2D: 'Chi tiết kích thước các bộ phận.'"
-  - "CAD: 'File CAD chuẩn kỹ thuật.'"
-- **Input**: 3 prompts
-  - **Prompt cho bản vẽ 3D** (Textarea, 3 rows)
-    - Label: "Prompt tạo bản vẽ 3D"
-    - Placeholder: "Mô tả chi tiết cho AI tạo bản vẽ 3D..."
-    - Required: Yes
-  - **Prompt cho bản vẽ 2D** (Textarea, 3 rows)
-    - Label: "Prompt tạo bản vẽ 2D"
-    - Placeholder: "Mô tả chi tiết cho AI tạo bản vẽ 2D..."
-    - Required: Yes
-  - **Prompt cho file CAD** (Textarea, 3 rows)
-    - Label: "Prompt tạo file CAD"
-    - Placeholder: "Mô tả chi tiết cho AI tạo file CAD..."
-    - Required: Yes
-
----
-
-**Câu 3: Tạo và đánh giá bản vẽ 3D**
-
-- **Label**: "Câu 3 - Tạo và đánh giá bản vẽ 3D"
-- **Context**:
-  - Text: "Tạo bản vẽ 3D bằng AI hoặc công cụ khác."
-  - Text: "Chèn hình minh họa."
-  - Text: "Ghi điểm mạnh & cần cải thiện."
-- **Example hint**:
-  - Text: "Ví dụ: mô hình trực quan nhưng kích thước chưa chuẩn."
-- **Input Section 1**: Upload 3D
-  - **Upload bản vẽ 3D** (File upload)
-    - Label: "Tải lên hình bản vẽ 3D"
-    - Accept: Images, 3D files (jpg, png, pdf, obj, stl)
-    - Max size: 10MB
-    - Required: Yes
-    - Preview: Show uploaded file
-- **Input Section 2**: Evaluation
-  - **Điểm mạnh** (Textarea, 3 rows)
-    - Label: "Điểm mạnh của bản vẽ 3D"
-    - Placeholder: "Ghi các điểm mạnh..."
-    - Required: Yes
-  - **Cần cải thiện** (Textarea, 3 rows)
-    - Label: "Điểm cần cải thiện"
-    - Placeholder: "Ghi các điểm cần cải thiện..."
-    - Required: Yes
+- **Label**: "2. Dựng mô hình 3D và tạo bản vẽ 2D (Pha 3.2 – 15 phút)"
+- **Mô hình 3D** (Textarea, 4 rows)
+  - Placeholder: "Mô tả mô hình 3D..."
+  - Required: Yes
+  - Validation: Minimum 30 characters
+- **Tải lên ảnh mô hình 3D** (File upload)
+  - Accept: Images, 3D files (jpg, png, obj, stl)
+  - Multiple: Yes
+  - Optional
+- **Ảnh kỹ thuật 2D** (3 file uploads):
+  - **Mặt đứng** (File upload)
+    - Label: "Mặt đứng:"
+    - Accept: Images (jpg, png)
+    - Help text: "Tải lên ảnh mặt đứng (JPG, PNG)"
+  - **Mặt bằng** (File upload)
+    - Label: "Mặt bằng:"
+    - Accept: Images (jpg, png)
+    - Help text: "Tải lên ảnh mặt bằng (JPG, PNG)"
+  - **Mặt cạnh** (File upload)
+    - Label: "Mặt cạnh:"
+    - Accept: Images (jpg, png)
+    - Help text: "Tải lên ảnh mặt cạnh (JPG, PNG)"
 
 ---
 
-**Câu 4: Tạo bản vẽ 2D & CAD**
+**Section 3: Chuyển sang bản vẽ CAD (Pha 3.3 – 10 phút)**
 
-- **Label**: "Câu 4 - Tạo bản vẽ 2D & CAD"
-- **Context**:
-  - Text: "Dựa trên 3D, tạo 2D & CAD."
-  - Text: "Chèn hình/file, ghi điểm khác biệt & điều chỉnh."
-- **Example hint**:
-  - Text: "Ví dụ: 2D có kích thước chuẩn, CAD chuẩn kỹ thuật."
-- **Input Section 1**: Upload 2D
-  - **Upload bản vẽ 2D** (File upload)
-    - Label: "Tải lên hình bản vẽ 2D"
-    - Accept: Images, PDF (jpg, png, pdf)
-    - Max size: 5MB
-    - Required: Yes
-    - Preview: Show uploaded file
-- **Input Section 2**: Upload CAD
-  - **Upload file CAD** (File upload)
-    - Label: "Tải lên file CAD"
-    - Accept: CAD files (dwg, dxf, pdf, step, iges)
-    - Max size: 10MB
-    - Required: Yes
-    - Show filename after upload
-- **Input Section 3**: Analysis
-  - **Điểm khác biệt & điều chỉnh** (Textarea, 5 rows)
-    - Label: "So sánh 2D, CAD với 3D - Điểm khác biệt và điều chỉnh"
-    - Placeholder: "Ghi các điểm khác biệt và điều chỉnh đã thực hiện..."
-    - Required: Yes
-    - Validation: Minimum 80 characters
+- **Label**: "3. Chuyển sang bản vẽ CAD (Pha 3.3 – 10 phút)"
+- **File CAD/Hình ảnh CAD** (File upload)
+  - Accept: CAD files, images (dwg, dxf, pdf, jpg, png)
+  - Multiple: Yes
+  - Optional
 
 ---
 
-**Câu 5: Chốt bản thiết kế cuối & phản biện**
+**Section 4: Sản phẩm cuối cùng**
 
-- **Label**: "Câu 5 - Chốt bản thiết kế cuối & phản biện"
-- **Context**:
-  - Text: "So sánh với nhóm khác, chọn bản cuối cùng."
-  - Text: "Giải thích tại sao khả thi, an toàn, thẩm mỹ, đề xuất cải thiện."
-- **Example hint**:
-  - Text: "Ví dụ: đáy thuyền dày hơn để chống rò nước."
-- **Input Section 1**: Final Design Upload
-  - **Upload bản vẽ hoàn chỉnh** (File upload)
-    - Label: "Tải lên bản vẽ thiết kế cuối cùng"
-    - Accept: Images, PDF, CAD (jpg, png, pdf, dwg, dxf)
-    - Max size: 10MB
-    - Required: Yes
-    - Preview/Show filename
-- **Input Section 2**: Final Evaluation
-  - **Giải thích & đề xuất cải thiện** (Textarea, 8 rows)
-    - Label: "Tại sao thiết kế này khả thi, an toàn, thẩm mỹ? Đề xuất cải thiện?"
-    - Placeholder: "Nhóm giải thích và đề xuất cải thiện..."
-    - Required: Yes
-    - Validation: Minimum 150 characters
+- **Label**: "III. Sản phẩm cuối cùng"
+- **Info box**:
+  - Background: `bg-yellow-50 border-l-4 border-yellow-400`
+  - Text: "Chuỗi bản vẽ hoàn chỉnh: Ảnh ý tưởng → Mô hình 3D → 3 ảnh kỹ thuật 2D → File CAD"
+- **Nguyên vật liệu cần chuẩn bị** (Textarea, 5 rows)
+  - Label: "Chuẩn bị cho Hoạt động 4 (Chế tạo mô hình) - Nguyên vật liệu cần chuẩn bị:"
+  - Placeholder: "Liệt kê các nguyên vật liệu cần chuẩn bị..."
+  - Required: Yes
+  - Validation: Minimum 30 characters
+
+---
+
+**Section 5: Bảng tự đánh giá**
+
+- **Label**: "IV. Bảng tự đánh giá"
+- **Table format** with 5 criteria:
+  - Columns: Tiêu chí | Đạt | Chưa đạt | Ghi chú
+  - Rows:
+    1. Ý tưởng tuân thủ tiêu chí kỹ thuật
+    2. Mô hình 3D cân đối, hợp lý
+    3. Ảnh 2D đủ ba mặt chiếu
+    4. Bản vẽ CAD chính xác
+    5. Hồ sơ thiết kế logic, mạch lạc
+  - Each row has:
+    - Checkbox for "Đạt"
+    - Checkbox for "Chưa đạt"
+    - Text input for "Ghi chú"
 
 ### Submit Button
 - Text: "Hoàn thành hoạt động"
@@ -244,32 +210,32 @@ interface Activity3Data {
 ## Validation Rules
 
 ### Câu 1
-- Description: Required, minimum 100 characters
+- Description: Required, minimum 20 characters
 - Image upload: Optional
 - If uploaded: jpg, png, pdf only, max 5MB
 
 ### Câu 2
 - All 3 prompts: Required
-- Each prompt: Minimum 30 characters
+- Each prompt: Minimum 20 characters
 - Must be clear and specific
 
 ### Câu 3
 - 3D drawing upload: Required
 - Accepted formats: jpg, png, pdf, obj, stl
 - Max size: 10MB
-- Strengths: Required, minimum 50 characters
-- Improvements: Required, minimum 50 characters
+- Strengths: Required, minimum 20 characters
+- Improvements: Required, minimum 20 characters
 
 ### Câu 4
 - 2D drawing upload: Required (jpg, png, pdf, max 5MB)
 - CAD file upload: Required (dwg, dxf, pdf, step, iges, max 10MB)
-- Analysis: Required, minimum 80 characters
+- Analysis: Required, minimum 20 characters
 
 ### Câu 5
 - Final design upload: Required
 - Accepted formats: jpg, png, pdf, dwg, dxf
 - Max size: 10MB
-- Evaluation: Required, minimum 150 characters
+- Evaluation: Required, minimum 20 characters
 - Must include feasibility, safety, aesthetics, and improvements
 
 ## Notes

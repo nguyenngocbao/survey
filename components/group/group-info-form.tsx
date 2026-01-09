@@ -8,7 +8,6 @@ import { Label } from "@/components/ui/label"
 
 export function GroupInfoForm() {
   const [groupName, setGroupName] = useState("")
-  const [groupCode, setGroupCode] = useState("")
   const [className, setClassName] = useState("")
   const [leaderName, setLeaderName] = useState("")
   const [members, setMembers] = useState<string[]>([""])
@@ -35,7 +34,7 @@ export function GroupInfoForm() {
     e.preventDefault()
     
     // Validation
-    if (!groupName || !groupCode || !className || !leaderName) {
+    if (!groupName || !className || !leaderName) {
       alert("Vui lòng điền đầy đủ thông tin bắt buộc")
       return
     }
@@ -49,7 +48,6 @@ export function GroupInfoForm() {
     // Save data
     const groupData = {
       groupName,
-      groupCode,
       className,
       leaderName,
       members: allMembers,
@@ -78,30 +76,18 @@ export function GroupInfoForm() {
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-700">Thông tin nhóm cơ bản</h3>
             
-            {/* Group Name */}
-            <div>
-              <Label htmlFor="groupName">Tên nhóm *</Label>
-              <Input
-                id="groupName"
-                value={groupName}
-                onChange={(e) => setGroupName(e.target.value)}
-                placeholder="Nhóm Xì Trum"
-                required
-              />
-            </div>
-
-            {/* Group Code & Class */}
+            {/* Group Name & Class */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="groupCode">Mã nhóm *</Label>
+                <Label htmlFor="groupName">Tên nhóm *</Label>
                 <Input
-                  id="groupCode"
-                  value={groupCode}
-                  onChange={(e) => setGroupCode(e.target.value)}
-                  placeholder="GROUP001"
+                  id="groupName"
+                  value={groupName}
+                  onChange={(e) => setGroupName(e.target.value)}
+                  placeholder="Nhóm Xì Trum"
                   required
                 />
-                <p className="text-xs text-gray-500 mt-1">Mã định danh duy nhất cho nhóm</p>
+                <p className="text-xs text-gray-500 mt-1">Tên nhóm sẽ được dùng làm mã định danh</p>
               </div>
 
               <div>

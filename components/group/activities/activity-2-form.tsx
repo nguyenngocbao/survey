@@ -4,13 +4,18 @@ import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
+import { BackButton } from "@/components/ui/back-button"
 
 interface Activity2FormData {
   question1: string
   question2: string
   question3: string
-  question4: string
-  question5: string
+  question4: Array<{
+    step: string
+    aiTool: string
+    usage: string
+  }>
 }
 
 export function Activity2Form() {
@@ -18,35 +23,84 @@ export function Activity2Form() {
     question1: "",
     question2: "",
     question3: "",
-    question4: "",
-    question5: "",
+    question4: Array(3)
+      .fill(null)
+      .map(() => ({
+        step: "",
+        aiTool: "",
+        usage: "",
+      })),
   })
 
-  const handleChange = (field: keyof Activity2FormData, value: string) => {
+  const handleChange = (field: "question1" | "question2" | "question3", value: string) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }))
   }
 
+  const handleTableChange = (
+    index: number,
+    field: "step" | "aiTool" | "usage",
+    value: string
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      question4: prev.question4.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item
+      ),
+    }))
+  }
+
+  const addTableRow = () => {
+    if (formData.question4.length < 7) {
+      setFormData((prev) => ({
+        ...prev,
+        question4: [
+          ...prev.question4,
+          {
+            step: "",
+            aiTool: "",
+            usage: "",
+          },
+        ],
+      }))
+    }
+  }
+
+  const removeTableRow = (index: number) => {
+    if (formData.question4.length > 1) {
+      setFormData((prev) => ({
+        ...prev,
+        question4: prev.question4.filter((_, i) => i !== index),
+      }))
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Validation - minimum 50 characters for each question
-    const minLength = 50
-    const questions = [
+    // Validation - check if text questions are filled
+    const textQuestions = [
       { field: "question1", label: "Câu 1" },
       { field: "question2", label: "Câu 2" },
       { field: "question3", label: "Câu 3" },
-      { field: "question4", label: "Câu 4" },
-      { field: "question5", label: "Câu 5" },
     ]
 
-    for (const q of questions) {
-      if (formData[q.field as keyof Activity2FormData].length < minLength) {
-        alert(`${q.label}: Vui lòng nhập ít nhất ${minLength} ký tự`)
+    for (const q of textQuestions) {
+      if (!formData[q.field as keyof Pick<Activity2FormData, "question1" | "question2" | "question3">].trim()) {
+        alert(`${q.label}: Vui lòng nhập câu trả lời`)
         return
       }
+    }
+
+    // Validation for table - check if fields are filled
+    const incompleteTable = formData.question4.some(
+      (item) => !item.step.trim() || !item.aiTool.trim() || !item.usage.trim()
+    )
+    if (incompleteTable) {
+      alert("Câu 4: Vui lòng hoàn thành tất cả các bước, công cụ AI và cách sử dụng")
+      return
     }
 
     // TODO: Submit to API
@@ -60,25 +114,7 @@ export function Activity2Form() {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50">
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         {/* Back Button */}
-        <a
-          href="/group"
-          className="inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 transition-colors font-medium mb-6"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          Quay lại
-        </a>
+        <BackButton href="/group" />
 
         {/* Header */}
         <Card className="p-8 bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 mb-6">
@@ -92,43 +128,7 @@ export function Activity2Form() {
           </div>
         </Card>
 
-        {/* Purpose Box */}
-        <Card className="p-6 bg-purple-50 border-l-4 border-purple-500 mb-6">
-          <div className="flex items-start gap-3">
-            <span className="text-3xl">🎯</span>
-            <div>
-              <h3 className="font-semibold text-gray-800 mb-3 text-lg">
-                I. Mục tiêu
-              </h3>
-              <ul className="text-gray-700 space-y-2">
-                <li>
-                  • Hình thành trực giác về lực đẩy Archimedes, thể tích chiếm
-                  nước và ảnh hưởng của hình dạng đến độ nổi.
-                </li>
-                <li>
-                  • Nhận diện vật liệu, kết cấu và nguyên lý kỹ thuật của
-                  thuyền.
-                </li>
-                <li>
-                  • Sử dụng AI để mở rộng phương án thiết kế và lựa chọn giải
-                  pháp tối ưu.
-                </li>
-              </ul>
-            </div>
-          </div>
-        </Card>
 
-        {/* Tasks Section */}
-        <Card className="p-6 bg-blue-50 border-l-4 border-blue-500 mb-8">
-          <div className="flex items-start gap-3">
-            <span className="text-3xl">📝</span>
-            <div>
-              <h3 className="font-semibold text-gray-800 text-lg">
-                II. Nhiệm vụ học tập
-              </h3>
-            </div>
-          </div>
-        </Card>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Question 1 */}
@@ -136,13 +136,8 @@ export function Activity2Form() {
             <div className="space-y-4">
               <div>
                 <h3 className="text-xl font-bold text-purple-600 mb-3">
-                  Câu 1 – Nguyên lý nổi
+                  Câu 1: Bạn sẽ điều chỉnh hình dạng và thể tích như thế nào để thuyền nổi tốt và ổn định?
                 </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  Nếu trọng lượng thuyền không đổi, bạn sẽ điều chỉnh hình dạng
-                  và thể tích chiếm nước như thế nào để thuyền nổi tốt và ổn
-                  định?
-                </p>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-2 block">
@@ -157,7 +152,7 @@ export function Activity2Form() {
                   className="resize-none"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  {formData.question1.length} / 50 ký tự tối thiểu
+                  Nhập câu trả lời của nhóm
                 </p>
               </div>
             </div>
@@ -168,13 +163,8 @@ export function Activity2Form() {
             <div className="space-y-4">
               <div>
                 <h3 className="text-xl font-bold text-purple-600 mb-3">
-                  Câu 2 – Kết cấu và vật liệu
+                  Câu 2: Vật liệu và kết cấu nào giúp thuyền vừa nhẹ, bền, vừa an toàn? Vì sao?
                 </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  Bạn sẽ chọn vật liệu và kết cấu ra sao để thuyền vừa nhẹ,
-                  bền, vừa an toàn? Giải thích dựa trên nguyên lý kỹ thuật đã
-                  học.
-                </p>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-2 block">
@@ -189,7 +179,7 @@ export function Activity2Form() {
                   className="resize-none"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  {formData.question2.length} / 50 ký tự tối thiểu
+                  Nhập câu trả lời của nhóm
                 </p>
               </div>
             </div>
@@ -200,13 +190,8 @@ export function Activity2Form() {
             <div className="space-y-4">
               <div>
                 <h3 className="text-xl font-bold text-purple-600 mb-3">
-                  Câu 3 – Quy trình thiết kế
+                  Câu 3: Hãy nêu các bước chính để thiết kế một chiếc thuyền, dựa trên quy trình thiết kế kĩ thuật.
                 </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  Mô tả 3 bước quan trọng để biến ý tưởng thuyền từ prototype
-                  đất sét thành phương án thiết kế AI, nêu công cụ hỗ trợ từng
-                  bước.
-                </p>
               </div>
               <div>
                 <label className="text-sm font-medium text-gray-700 mb-2 block">
@@ -221,72 +206,96 @@ export function Activity2Form() {
                   className="resize-none"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  {formData.question3.length} / 50 ký tự tối thiểu
+                  Nhập câu trả lời của nhóm
                 </p>
               </div>
             </div>
           </Card>
 
-          {/* Question 4 */}
+          {/* Question 4 - Table */}
           <Card className="p-6">
             <div className="space-y-4">
               <div>
                 <h3 className="text-xl font-bold text-purple-600 mb-3">
-                  Câu 4 – So sánh và đánh giá
+                  Câu 4: AI có thể giúp bạn làm gì ở các bước nào trong quá trình thiết kế kĩ thuật chiếc thuyền?
                 </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  Khi so sánh prototype đất sét và phương án AI, bạn nhận thấy
-                  điểm mạnh – điểm yếu của mỗi phương án, và đâu là cơ sở để
-                  chọn giải pháp tối ưu?
-                </p>
               </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">
-                  Trả lời:
-                </label>
-                <Textarea
-                  value={formData.question4}
-                  onChange={(e) => handleChange("question4", e.target.value)}
-                  rows={6}
-                  placeholder="Nhập câu trả lời của nhóm..."
-                  required
-                  className="resize-none"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  {formData.question4.length} / 50 ký tự tối thiểu
-                </p>
-              </div>
-            </div>
-          </Card>
 
-          {/* Question 5 */}
-          <Card className="p-6">
-            <div className="space-y-4">
-              <div>
-                <h3 className="text-xl font-bold text-purple-600 mb-3">
-                  Câu 5 – Phác thảo phương án tối ưu
-                </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  Mô tả thiết kế thuyền cuối cùng: hình dạng, vật liệu, kết
-                  cấu, và các ưu điểm nổi bật liên quan đến nổi, ổn định và an
-                  toàn.
-                </p>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-700 mb-2 block">
-                  Trả lời:
-                </label>
-                <Textarea
-                  value={formData.question5}
-                  onChange={(e) => handleChange("question5", e.target.value)}
-                  rows={6}
-                  placeholder="Nhập câu trả lời của nhóm..."
-                  required
-                  className="resize-none"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  {formData.question5.length} / 50 ký tự tối thiểu
-                </p>
+              <div className="space-y-4">
+                {/* Table Header */}
+                <div className="grid grid-cols-12 gap-4 font-semibold text-sm text-gray-700 pb-3 border-b-2 border-gray-200">
+                  <div className="col-span-3 text-center">Bước</div>
+                  <div className="col-span-4">Công cụ AI (Tên hoặc mô tả)</div>
+                  <div className="col-span-4">Cách sử dụng</div>
+                  <div className="col-span-1 text-center">Thao tác</div>
+                </div>
+
+                {/* Table Rows */}
+                {formData.question4.map((item, index) => (
+                  <div key={index} className="grid grid-cols-12 gap-4 items-start">
+                    <div className="col-span-3">
+                      <Input
+                        placeholder="Tên bước thiết kế..."
+                        value={item.step}
+                        onChange={(e) =>
+                          handleTableChange(index, "step", e.target.value)
+                        }
+                        required
+                        className="h-10"
+                      />
+                    </div>
+                    <div className="col-span-4">
+                      <Input
+                        placeholder="ChatGPT, Gemini, CAD AI..."
+                        value={item.aiTool}
+                        onChange={(e) =>
+                          handleTableChange(index, "aiTool", e.target.value)
+                        }
+                        required
+                        className="h-10"
+                      />
+                    </div>
+                    <div className="col-span-4">
+                      <Textarea
+                        rows={2}
+                        placeholder="Mô tả cách sử dụng công cụ AI..."
+                        value={item.usage}
+                        onChange={(e) =>
+                          handleTableChange(index, "usage", e.target.value)
+                        }
+                        required
+                        className="resize-none"
+                      />
+                    </div>
+                    <div className="col-span-1 flex justify-center">
+                      {formData.question4.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeTableRow(index)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 h-10 w-10 p-0"
+                        >
+                          ×
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+
+                {/* Add Row Button */}
+                {formData.question4.length < 7 && (
+                  <div className="flex justify-center pt-4">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={addTableRow}
+                      className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 border-purple-300"
+                    >
+                      + Thêm bước
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </Card>

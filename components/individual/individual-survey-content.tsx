@@ -12,10 +12,10 @@ interface IndividualSurveyData {
     fullName: string
     class: string
   }
-  perspective: {
-    emotionToday: string
-    wowMoment: string
-    futureExperience: string
+  responses: {
+    question1: string
+    question2: string
+    question3: string
   }
 }
 
@@ -25,10 +25,10 @@ export function IndividualSurveyContent() {
       fullName: '',
       class: ''
     },
-    perspective: {
-      emotionToday: '',
-      wowMoment: '',
-      futureExperience: ''
+    responses: {
+      question1: '',
+      question2: '',
+      question3: ''
     }
   })
 
@@ -42,11 +42,11 @@ export function IndividualSurveyContent() {
     }))
   }
 
-  const handlePerspectiveChange = (field: string, value: string) => {
+  const handleResponseChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
-      perspective: {
-        ...prev.perspective,
+      responses: {
+        ...prev.responses,
         [field]: value
       }
     }))
@@ -61,18 +61,18 @@ export function IndividualSurveyContent() {
       return
     }
 
-    if (formData.perspective.emotionToday.length < 20) {
-      alert('Câu 1: Vui lòng nhập ít nhất 20 ký tự')
+    if (!formData.responses.question1.trim()) {
+      alert('Câu 1: Vui lòng nhập câu trả lời')
       return
     }
 
-    if (formData.perspective.wowMoment.length < 30) {
-      alert('Câu 2: Vui lòng nhập ít nhất 30 ký tự')
+    if (!formData.responses.question2.trim()) {
+      alert('Câu 2: Vui lòng nhập câu trả lời')
       return
     }
 
-    if (formData.perspective.futureExperience.length < 30) {
-      alert('Câu 3: Vui lòng nhập ít nhất 30 ký tự')
+    if (!formData.responses.question3.trim()) {
+      alert('Câu 3: Vui lòng nhập câu trả lời')
       return
     }
 
@@ -149,101 +149,83 @@ export function IndividualSurveyContent() {
               </div>
             </div>
 
-            {/* Part 2: Perspective */}
+            {/* Part 2: Survey Questions */}
             <div className="space-y-8 bg-gradient-to-br from-cyan-50/50 to-blue-50/50 rounded-2xl p-8 border border-cyan-100">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center shadow-lg">
-                  <span className="text-xl">👁️</span>
+                  <span className="text-xl">💭</span>
                 </div>
                 <h3 className="text-2xl font-bold text-gray-800">
-                  Phần 2: Góc nhìn của bạn
+                  Phần 2: Câu hỏi khảo sát
                 </h3>
               </div>
 
               {/* Question 1 */}
               <div className="space-y-3 bg-white/70 rounded-xl p-6 border border-cyan-100">
-                <Label htmlFor="emotionToday" className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                <Label htmlFor="question1" className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                   <span className="text-cyan-600">1</span>
-                  Cảm xúc của bạn hôm nay *
+                  Khoảng khắc ấn tượng nhất *
                 </Label>
                 <p className="text-gray-600 leading-relaxed">
-                  Nếu hôm nay là một màu sắc hoặc một biểu tượng, bạn sẽ chọn gì để thể hiện cảm xúc khi tham gia hoạt động? Giải thích ngắn gọn.
+                  Khoảng khắc nào khiến bạn ấn tượng nhất và nó giúp bạn hiểu gì hơn về AI hoặc thiết kế kỹ thuật?
                 </p>
-                <div className="bg-cyan-50 border-l-4 border-cyan-400 p-3 rounded">
-                  <p className="text-sm text-gray-600 italic">
-                    💡 Ví dụ: 🌊 vì vừa thú vị vừa "bập bềnh" khi thử AI tạo thuyền; hoặc ⚡ vì năng động và sáng tạo.
-                  </p>
-                </div>
                 <Textarea
-                  id="emotionToday"
-                  rows={4}
-                  value={formData.perspective.emotionToday}
-                  onChange={(e) => handlePerspectiveChange('emotionToday', e.target.value)}
-                  placeholder="Chọn màu sắc hoặc biểu tượng và giải thích..."
+                  id="question1"
+                  rows={6}
+                  value={formData.responses.question1}
+                  onChange={(e) => handleResponseChange('question1', e.target.value)}
+                  placeholder="Trả lời:"
                   required
                   className="mt-2 border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500"
                 />
-                <p className="text-sm text-gray-500 flex items-center gap-2">
-                  <span className={formData.perspective.emotionToday.length >= 20 ? 'text-green-600' : 'text-orange-600'}>
-                    {formData.perspective.emotionToday.length} / 20 ký tự tối thiểu
-                  </span>
-                  {formData.perspective.emotionToday.length >= 20 && <span className="text-green-600">✓</span>}
+                <p className="text-sm text-gray-500">
+                  Nhập câu trả lời của bạn
                 </p>
               </div>
 
               {/* Question 2 */}
               <div className="space-y-3 bg-white/70 rounded-xl p-6 border border-cyan-100">
-                <Label htmlFor="wowMoment" className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                <Label htmlFor="question2" className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                   <span className="text-cyan-600">2</span>
-                  Phần bạn thích nhất & "Wow!" moment *
+                  Điểm tiến bộ nhất *
                 </Label>
                 <p className="text-gray-600 leading-relaxed">
-                  Trong buổi học, khoảnh khắc nào khiến bạn nói "Wow!" hoặc thích thú nhất, và bạn học được gì từ đó?
+                  Sau buổi học, bạn cảm thấy mình tiến bộ nhất ở điểm nào? Vì sao?
                 </p>
-                <div className="bg-cyan-50 border-l-4 border-cyan-400 p-3 rounded">
-                  <p className="text-sm text-gray-600 italic">
-                    💡 Ví dụ: Khi AI biến prompt thành bản vẽ 3D, học cách mô tả chi tiết để AI hiểu đúng.
-                  </p>
-                </div>
                 <Textarea
-                  id="wowMoment"
-                  rows={5}
-                  value={formData.perspective.wowMoment}
-                  onChange={(e) => handlePerspectiveChange('wowMoment', e.target.value)}
-                  placeholder="Khoảnh khắc 'Wow!' và điều bạn học được..."
+                  id="question2"
+                  rows={6}
+                  value={formData.responses.question2}
+                  onChange={(e) => handleResponseChange('question2', e.target.value)}
+                  placeholder="Trả lời:"
                   required
                   className="mt-2 border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500"
                 />
-                <p className="text-sm text-gray-500 flex items-center gap-2">
-                  <span className={formData.perspective.wowMoment.length >= 30 ? 'text-green-600' : 'text-orange-600'}>
-                    {formData.perspective.wowMoment.length} / 30 ký tự tối thiểu
-                  </span>
-                  {formData.perspective.wowMoment.length >= 30 && <span className="text-green-600">✓</span>}
+                <p className="text-sm text-gray-500">
+                  Nhập câu trả lời của bạn
                 </p>
               </div>
 
               {/* Question 3 */}
-              <div className="space-y-3">
-                <Label htmlFor="futureExperience" className="text-lg font-semibold text-gray-800">
-                  Câu 3 - Tương lai của trải nghiệm *
+              <div className="space-y-3 bg-white/70 rounded-xl p-6 border border-cyan-100">
+                <Label htmlFor="question3" className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                  <span className="text-cyan-600">3</span>
+                  Đề xuất cải tiến *
                 </Label>
                 <p className="text-gray-600 leading-relaxed">
-                  Nếu được tạo buổi học tiếp theo theo phong cách này, bạn sẽ muốn giữ, thay đổi hay thêm gì để vui hơn và học hiệu quả hơn?
-                </p>
-                <p className="text-sm text-gray-500 italic">
-                  Ví dụ: Thêm mini game phản biện hoặc thử nghiệm vật liệu thật cho thuyền.
+                  Nếu cải tiến buổi học tiếp theo, bạn muốn thêm hoặc thay đổi điều gì để học hiệu quả hơn?
                 </p>
                 <Textarea
-                  id="futureExperience"
-                  rows={5}
-                  value={formData.perspective.futureExperience}
-                  onChange={(e) => handlePerspectiveChange('futureExperience', e.target.value)}
-                  placeholder="Đề xuất của bạn cho buổi học tiếp theo..."
+                  id="question3"
+                  rows={6}
+                  value={formData.responses.question3}
+                  onChange={(e) => handleResponseChange('question3', e.target.value)}
+                  placeholder="Trả lời:"
                   required
-                  className="mt-2"
+                  className="mt-2 border-cyan-200 focus:border-cyan-500 focus:ring-cyan-500"
                 />
                 <p className="text-sm text-gray-500">
-                  {formData.perspective.futureExperience.length} / 30 ký tự tối thiểu
+                  Nhập câu trả lời của bạn
                 </p>
               </div>
             </div>

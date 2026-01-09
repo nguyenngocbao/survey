@@ -112,22 +112,17 @@ WHEN group data is updated, THE Survey_System SHALL display real-time statistics
 1. **Tên nhóm** * (Required)
    - Type: Text input
    - Placeholder: "Nhóm Xì Trum"
+   - Note: "Tên nhóm sẽ được dùng làm mã định danh"
    - Full width
 
-2. **Mã nhóm** * (Required)
-   - Type: Text input
-   - Placeholder: "GROUP001"
-   - Note: "Mã định danh duy nhất cho nhóm"
-   - Half width
-
-3. **Lớp** * (Required)
+2. **Lớp** * (Required)
    - Type: Text input
    - Placeholder: "10A1"
    - Half width
 
 ### Thông tin trưởng nhóm
 
-4. **Tên trưởng nhóm** * (Required)
+3. **Tên trưởng nhóm** * (Required)
    - Type: Text input
    - Placeholder: "Nguyễn Văn A"
 
@@ -382,20 +377,20 @@ WHEN group data is updated, THE Survey_System SHALL display real-time statistics
 
 ### State Management
 - Use React state for form data
-- Store groupCode in localStorage
+- Store groupName in localStorage
 - Track completion status for each activity
 
 ### API Endpoints
 
 **POST /api/group-surveys/group-info**
 - Save group and member information
-- Return groupCode
+- Return success status
 
-**GET /api/group-surveys/stats/:groupCode**
+**GET /api/group-surveys/stats/:groupName**
 - Get real-time statistics
 - Return completion status, member count, progress
 
-**GET /api/group-surveys/:groupCode**
+**GET /api/group-surveys/:groupName**
 - Get existing group data
 - Return all saved information
 
@@ -404,7 +399,7 @@ WHEN group data is updated, THE Survey_System SHALL display real-time statistics
 ```
 User lands on /group
   ↓
-Load existing data (if groupCode in localStorage)
+Load existing data (if groupName in localStorage)
   ↓
 Display 4 sections
   ↓

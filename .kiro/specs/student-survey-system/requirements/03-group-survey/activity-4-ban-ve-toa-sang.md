@@ -3,8 +3,8 @@
 ## User Story
 
 **As a** Student_User  
-**I want to** complete Activity 4 form about glowing blueprints  
-**So that** my group can document our exploration of luminous maps
+**I want to** complete Activity 4 form to present design process and evaluate results  
+**So that** my group can finalize technical documentation and assess boat model against criteria
 
 ## Acceptance Criteria (EARS Format)
 
@@ -24,30 +24,71 @@ WHEN a Student_User clicks back button, THE Survey_System SHALL navigate back to
 **Header**:
 - Icon: ✨
 - Title: "Hoạt động 4: Bản vẽ toả sáng"
-- Subtitle: "Tìm hiểu bản vẽ phát ra ánh sáng kỳ diệu"
 - Color: Blue gradient (`from-blue-500 to-blue-600`)
 
 **Back Button**:
 - Text: "← Quay lại"
 - Navigate to: `/group`
 
-### Hướng dẫn chung
+### Mục tiêu
 
-**Instruction Box** (hiển thị ở đầu form):
+**Purpose Box**:
 - Background: `bg-blue-50 border-l-4 border-blue-500`
-- Icon: ✨
-- Text: "Hoạt động tổng kết và phản tư. Nhóm nhìn lại toàn bộ quá trình, đánh giá sản phẩm và học hỏi từ các nhóm khác."
+- Icon: 🎯
+- Title: "I. Mục tiêu"
+- Content:
+  - "Trình bày và phản biện quy trình thiết kế thuyền."
+  - "Đánh giá kết quả thử nghiệm và đề xuất cải tiến."
+  - "Hoàn thiện hồ sơ kỹ thuật số và mô hình thuyền đáp ứng tiêu chí: nổi - ổn định - an toàn - thân thiện môi trường."
+
+### Nhiệm vụ học tập
+
+**Tasks Box**:
+- Background: `bg-cyan-50 border-l-4 border-cyan-500`
+- Icon: 📝
+- Title: "II. Nhiệm vụ học tập"
 
 ### Form Fields
 
-**Câu 1: Điểm mạnh & cải tiến**
+**Câu hỏi 1: Quy trình thiết kế và kết quả thử nghiệm**
 
-- **Label**: "Câu 1 - Điểm mạnh & cải tiến"
+- **Label**: "Quy trình thiết kế và kết quả thử nghiệm:"
 - **Context**:
-  - Text: "Nhóm bạn nêu 1-2 điểm mạnh và 1 điểm cần cải thiện của sản phẩm cuối."
-- **Example hints**:
-  - "Điểm mạnh: thuyền nổi ổn định, thiết kế thẩm mỹ."
-  - "Cải thiện: đáy thuyền hơi mỏng, cần gia cố."
+  - Text: "Hãy mô tả ngắn gọn các bước thiết kế bạn thực hiện, kết quả thử nghiệm nổi/chìm và các cải tiến đã đề xuất."
+- **Input**:
+  - Type: Textarea
+  - Rows: 8
+  - Placeholder: "Nhập câu trả lời của nhóm..."
+  - Required: Yes
+  - Validation: Minimum 50 characters
+
+---
+
+**Câu hỏi 2: Vai trò AI trong thiết kế và hoàn thiện hồ sơ**
+
+- **Label**: "Vai trò AI trong thiết kế và hoàn thiện hồ sơ:"
+- **Context**:
+  - Text: "AI đã hỗ trợ bạn những gì trong quá trình thiết kế, phân tích và lập hồ sơ kỹ thuật?"
+- **Input**:
+  - Type: Textarea
+  - Rows: 8
+  - Placeholder: "Nhập câu trả lời của nhóm..."
+  - Required: Yes
+  - Validation: Minimum 50 characters
+
+---
+
+**Câu hỏi 3: Hồ sơ kỹ thuật và đánh giá sản phẩm**
+
+- **Label**: "Hồ sơ kỹ thuật và đánh giá sản phẩm:"
+- **Context**:
+  - Text: "Hồ sơ kỹ thuật của nhóm bạn có đầy đủ các bản vẽ, nhật ký, mô hình và đáp ứng tiêu chí kỹ thuật không? Hãy tự đánh giá."
+- **Input**:
+  - Type: Textarea
+  - Rows: 8
+  - Placeholder: "Nhập câu trả lời của nhóm..."
+  - Required: Yes
+  - Validation: Minimum 50 characters
 - **Input Section 1**: Strengths
   - **Điểm mạnh** (Textarea, 4 rows)
     - Label: "1-2 điểm mạnh của sản phẩm"
@@ -158,18 +199,18 @@ interface Activity4Data {
 ## Validation Rules
 
 ### Câu 1
-- Strengths: Required, minimum 50 characters
+- Strengths: Required, minimum 20 characters
 - Must list 1-2 specific strengths
-- Improvements: Required, minimum 40 characters
+- Improvements: Required, minimum 20 characters
 - Must include specific improvement suggestion
 
 ### Câu 2
 - Required: Yes
-- Minimum length: 60 characters
+- Minimum length: 20 characters
 - Should mention specific learnings from other groups
 
 ### Câu 3
-- Lesson: Required, minimum 40 characters
+- Lesson: Required, minimum 20 characters
 - Must be a meaningful lesson learned
 - Future improvement: Required, minimum 40 characters
 - Must be a concrete improvement plan

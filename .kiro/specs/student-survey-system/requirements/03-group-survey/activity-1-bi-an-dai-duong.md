@@ -1,8 +1,5 @@
 # Hoạt động 1: Bí ẩn dòng nước
 
-## Phiếu học tập số 1
-**XÁC LẬP TIÊU CHÍ KỸ THUẬT CHO THIẾT KẾ THUYỀN MINI AN TOÀN MÙA NƯỚC NỔI**
-
 ## User Story
 
 **As a** Student_User  

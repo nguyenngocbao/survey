@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
+import { BackButton } from "@/components/ui/back-button"
 
 interface Activity1FormData {
   tableA: {
@@ -106,12 +107,43 @@ export function Activity1Form() {
     }
   }
 
+  const addTableBRow = () => {
+    if (formData.tableB.standardizedCriteria.length < 10) {
+      setFormData((prev) => ({
+        ...prev,
+        tableB: {
+          standardizedCriteria: [
+            ...prev.tableB.standardizedCriteria,
+            {
+              stt: prev.tableB.standardizedCriteria.length + 1,
+              technicalCriterion: "",
+              description: "",
+            },
+          ],
+        },
+      }))
+    }
+  }
+
+  const removeTableBRow = (index: number) => {
+    if (formData.tableB.standardizedCriteria.length > 3) {
+      setFormData((prev) => ({
+        ...prev,
+        tableB: {
+          standardizedCriteria: prev.tableB.standardizedCriteria
+            .filter((_, i) => i !== index)
+            .map((item, i) => ({ ...item, stt: i + 1 })),
+        },
+      }))
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
     // Validation for Table A
     const incompleteTableA = formData.tableA.initialCriteria.some(
-      (item) => item.criterion.length < 10 || item.basis.length < 20
+      (item) => !item.criterion.trim() || !item.basis.trim()
     )
     if (incompleteTableA) {
       alert("Bảng A: Vui lòng hoàn thành tất cả các tiêu chí và cơ sở lựa chọn")
@@ -120,11 +152,10 @@ export function Activity1Form() {
 
     // Validation for Table B
     const incompleteTableB = formData.tableB.standardizedCriteria.some(
-      (item) =>
-        item.technicalCriterion.length < 10 || item.description.length < 30
+      (item) => !item.technicalCriterion.trim() || !item.description.trim()
     )
     if (incompleteTableB) {
-      alert("Bảng B: Vui lòng hoàn thành tất cả 7 tiêu chí kỹ thuật và mô tả")
+      alert("Bảng B: Vui lòng hoàn thành tất cả tiêu chí kỹ thuật và mô tả")
       return
     }
 
@@ -139,25 +170,7 @@ export function Activity1Form() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Back Button */}
-        <a
-          href="/group"
-          className="inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 transition-colors font-medium mb-6"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          Quay lại
-        </a>
+        <BackButton href="/group" />
 
         {/* Header */}
         <Card className="p-8 bg-gradient-to-r from-violet-500 to-violet-600 text-white border-0 mb-6">
@@ -171,56 +184,7 @@ export function Activity1Form() {
           </div>
         </Card>
 
-        {/* Purpose Box */}
-        <Card className="p-6 bg-blue-50 border-l-4 border-blue-500 mb-6">
-          <div className="flex items-start gap-3">
-            <span className="text-3xl">🎯</span>
-            <div>
-              <h3 className="font-semibold text-gray-800 mb-3 text-lg">
-                Mục đích sử dụng
-              </h3>
-              <ul className="text-gray-700 space-y-2">
-                <li>
-                  • Nhận diện vấn đề thực tiễn trong bối cảnh mùa nước nổi
-                </li>
-                <li>
-                  • Xây dựng hệ tiêu chí thiết kế dựa trên phân tích rủi ro và
-                  yêu cầu kỹ thuật
-                </li>
-                <li>
-                  • Chuẩn hóa tiêu chí theo định hướng năng lực thiết kế kỹ
-                  thuật
-                </li>
-                <li>
-                  • Tạo cơ sở đánh giá sản phẩm xuyên suốt các hoạt động sau
-                </li>
-              </ul>
-            </div>
-          </div>
-        </Card>
 
-        {/* Process Box */}
-        <Card className="p-6 bg-violet-50 border-l-4 border-violet-500 mb-8">
-          <div className="flex items-start gap-3">
-            <span className="text-3xl">📋</span>
-            <div>
-              <h3 className="font-semibold text-gray-800 mb-3 text-lg">
-                Quy trình thực hiện
-              </h3>
-              <ul className="text-gray-700 space-y-2">
-                <li>• Quan sát video/ảnh tình huống và liệt kê rủi ro</li>
-                <li>• Đề xuất tiêu chí thiết kế ban đầu</li>
-                <li>
-                  • Tham gia trò chơi 'Đấu trường Từ khóa' để nhận diện tiêu
-                  chí chuẩn
-                </li>
-                <li>
-                  • So sánh - điều chỉnh - thống nhất bộ tiêu chí kỹ thuật
-                </li>
-              </ul>
-            </div>
-          </div>
-        </Card>
 
         <form onSubmit={handleSubmit} className="space-y-8">
           {/* Table A: Initial Criteria */}
@@ -229,17 +193,13 @@ export function Activity1Form() {
               <h2 className="text-2xl font-bold text-blue-600 mb-2">
                 A. Tiêu chí ban đầu của nhóm
               </h2>
-              <p className="text-gray-600">
-                Nhóm đề xuất các tiêu chí thiết kế ban đầu dựa trên quan sát và
-                phân tích
-              </p>
             </div>
 
             <div className="space-y-4">
               {/* Table Header */}
               <div className="grid grid-cols-12 gap-4 font-semibold text-sm text-gray-700 pb-3 border-b-2 border-gray-200">
                 <div className="col-span-1 text-center">STT</div>
-                <div className="col-span-5">Tiêu chí đề xuất</div>
+                <div className="col-span-5">Tiêu chí kỹ thuật</div>
                 <div className="col-span-5">Cơ sở lựa chọn</div>
                 <div className="col-span-1 text-center">Thao tác</div>
               </div>
@@ -310,18 +270,15 @@ export function Activity1Form() {
               <h2 className="text-2xl font-bold text-violet-600 mb-2">
                 B. Bộ tiêu chí thống nhất của lớp (phiên bản chính thức)
               </h2>
-              <p className="text-gray-600">
-                Sau khi tham gia 'Đấu trường Từ khóa' và thảo luận, nhóm ghi
-                lại bộ tiêu chí chuẩn hóa
-              </p>
             </div>
 
             <div className="space-y-4">
               {/* Table Header */}
               <div className="grid grid-cols-12 gap-4 font-semibold text-sm text-gray-700 pb-3 border-b-2 border-gray-200">
                 <div className="col-span-1 text-center">STT</div>
-                <div className="col-span-5">Tiêu chí kỹ thuật</div>
+                <div className="col-span-4">Tiêu chí kỹ thuật</div>
                 <div className="col-span-6">Mô tả</div>
+                <div className="col-span-1 text-center">Thao tác</div>
               </div>
 
               {/* Table Rows */}
@@ -330,7 +287,7 @@ export function Activity1Form() {
                   <div className="col-span-1 flex items-center justify-center h-10 bg-violet-100 rounded-lg text-violet-700 font-semibold">
                     {item.stt}
                   </div>
-                  <div className="col-span-5">
+                  <div className="col-span-4">
                     <Input
                       placeholder="Tiêu chí kỹ thuật chuẩn..."
                       value={item.technicalCriterion}
@@ -357,20 +314,36 @@ export function Activity1Form() {
                       className="resize-none"
                     />
                   </div>
+                  <div className="col-span-1 flex justify-center">
+                    {formData.tableB.standardizedCriteria.length > 3 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeTableBRow(index)}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50 h-10 w-10 p-0"
+                      >
+                        ×
+                      </Button>
+                    )}
+                  </div>
                 </div>
               ))}
-            </div>
 
-            {/* Note Box */}
-            <Card className="p-4 bg-yellow-50 border-l-4 border-yellow-400 mt-6">
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">💡</span>
-                <p className="text-gray-700">
-                  Bộ tiêu chí này sẽ được sử dụng để đánh giá thiết kế thuyền
-                  trong các hoạt động tiếp theo
-                </p>
-              </div>
-            </Card>
+              {/* Add Row Button */}
+              {formData.tableB.standardizedCriteria.length < 10 && (
+                <div className="flex justify-center pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addTableBRow}
+                    className="text-violet-600 hover:text-violet-700 hover:bg-violet-50 border-violet-300"
+                  >
+                    + Thêm tiêu chí
+                  </Button>
+                </div>
+              )}
+            </div>
           </Card>
 
           {/* Submit Button */}

@@ -7,94 +7,94 @@ import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import { BackButton } from "@/components/ui/back-button"
 
 interface Activity3FormData {
   // 1. Phát triển ý tưởng
-  aiPrompt: {
-    purpose: string
-    context: string
-    criteria: string
-    basicShape: string
-    specialFunction: string
-    fullPrompt: string
+  section1: {
+    purposeContext: string
+    criteriaFunction: string
+    promptAndImage: string
+    ideaImages: File[]
   }
-  ideaImages: File[]
 
   // 2. Dựng mô hình 3D và tạo bản vẽ 2D
-  model3D: string
-  model3DImages: File[]
-  drawing2D: {
-    front: string
-    top: string
-    side: string
+  section2: {
+    model3DImages: File[]
+    technical2DImages: File[]
   }
 
   // 3. Chuyển sang bản vẽ CAD
-  cadFiles: File[]
+  section3: {
+    cadFiles: File[]
+  }
 
-  // 4. Sản phẩm cuối cùng
-  materials: string
-
-  // 5. Bảng tự đánh giá
+  // 4. Bảng tự đánh giá
   selfAssessment: {
     criteriaCompliance: { achieved: boolean; note: string }
     model3DBalance: { achieved: boolean; note: string }
     drawing2DComplete: { achieved: boolean; note: string }
     cadAccuracy: { achieved: boolean; note: string }
-    designLogic: { achieved: boolean; note: string }
   }
 }
 
 export default function Activity3Form() {
   const [formData, setFormData] = useState<Activity3FormData>({
-    aiPrompt: {
-      purpose: "",
-      context: "",
-      criteria: "",
-      basicShape: "",
-      specialFunction: "",
-      fullPrompt: "",
+    section1: {
+      purposeContext: "",
+      criteriaFunction: "",
+      promptAndImage: "",
+      ideaImages: [],
     },
-    ideaImages: [],
-    model3D: "",
-    model3DImages: [],
-    drawing2D: {
-      front: "",
-      top: "",
-      side: "",
+    section2: {
+      model3DImages: [],
+      technical2DImages: [],
     },
-    cadFiles: [],
-    materials: "",
+    section3: {
+      cadFiles: [],
+    },
     selfAssessment: {
       criteriaCompliance: { achieved: false, note: "" },
       model3DBalance: { achieved: false, note: "" },
       drawing2DComplete: { achieved: false, note: "" },
       cadAccuracy: { achieved: false, note: "" },
-      designLogic: { achieved: false, note: "" },
     },
   })
 
-  const handlePromptChange = (
-    field: keyof Activity3FormData["aiPrompt"],
-    value: string
+  const handleSection1Change = (
+    field: keyof Activity3FormData["section1"],
+    value: string | File[]
   ) => {
     setFormData((prev) => ({
       ...prev,
-      aiPrompt: {
-        ...prev.aiPrompt,
+      section1: {
+        ...prev.section1,
         [field]: value,
       },
     }))
   }
 
-  const handleDrawing2DChange = (
-    field: keyof Activity3FormData["drawing2D"],
-    value: string
+  const handleSection2Change = (
+    field: keyof Activity3FormData["section2"],
+    value: File[]
   ) => {
     setFormData((prev) => ({
       ...prev,
-      drawing2D: {
-        ...prev.drawing2D,
+      section2: {
+        ...prev.section2,
+        [field]: value,
+      },
+    }))
+  }
+
+  const handleSection3Change = (
+    field: keyof Activity3FormData["section3"],
+    value: File[]
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      section3: {
+        ...prev.section3,
         [field]: value,
       },
     }))
@@ -121,20 +121,18 @@ export default function Activity3Form() {
     e.preventDefault()
 
     // Basic validation
-    if (formData.aiPrompt.fullPrompt.length < 50) {
-      alert("Vui lòng nhập đầy đủ prompt AI (tối thiểu 50 ký tự)")
+    if (!formData.section1.purposeContext.trim()) {
+      alert("Vui lòng nhập mục đích & bối cảnh")
       return
     }
 
-    if (formData.model3D.length < 30) {
-      alert("Vui lòng mô tả mô hình 3D (tối thiểu 30 ký tự)")
+    if (!formData.section1.criteriaFunction.trim()) {
+      alert("Vui lòng nhập tiêu chí & chức năng")
       return
     }
 
-    // Note: 2D drawing images are now file uploads, validation can be added if needed
-
-    if (formData.materials.length < 30) {
-      alert("Vui lòng mô tả nguyên vật liệu cần chuẩn bị (tối thiểu 30 ký tự)")
+    if (!formData.section1.promptAndImage.trim()) {
+      alert("Vui lòng nhập prompt và minh họa")
       return
     }
 
@@ -149,25 +147,7 @@ export default function Activity3Form() {
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         {/* Back Button */}
-        <a
-          href="/group"
-          className="inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 transition-colors font-medium mb-6"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          Quay lại
-        </a>
+        <BackButton href="/group" />
 
         {/* Header */}
         <Card className="p-8 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white border-0 mb-6">
@@ -181,43 +161,7 @@ export default function Activity3Form() {
           </div>
         </Card>
 
-        {/* Purpose Box */}
-        <Card className="p-6 bg-indigo-50 border-l-4 border-indigo-500 mb-6">
-          <div className="flex items-start gap-3">
-            <span className="text-3xl">🎯</span>
-            <div>
-              <h3 className="font-semibold text-gray-800 mb-3 text-lg">
-                I. Mục tiêu
-              </h3>
-              <ul className="text-gray-700 space-y-2">
-                <li>
-                  • Tạo phác thảo thiết kế thuyền ban đầu đạt tiêu chí: nổi –
-                  ổn định – an toàn – thân thiện môi trường.
-                </li>
-                <li>
-                  • Ứng dụng AI (Gemini, ChatGPT, Meshy AI) để tạo chuỗi bản vẽ
-                  kỹ thuật hoàn chỉnh: Ý tưởng → 3D → 2D → CAD.
-                </li>
-                <li>
-                  • Hình thành tư duy thiết kế kỹ thuật dựa trên nguyên lý, kết
-                  cấu, vật liệu đã phân tích.
-                </li>
-              </ul>
-            </div>
-          </div>
-        </Card>
 
-        {/* Tasks Section */}
-        <Card className="p-6 bg-blue-50 border-l-4 border-blue-500 mb-8">
-          <div className="flex items-start gap-3">
-            <span className="text-3xl">📝</span>
-            <div>
-              <h3 className="font-semibold text-gray-800 text-lg">
-                II. Nhiệm vụ học tập
-              </h3>
-            </div>
-          </div>
-        </Card>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Section 1: Phát triển ý tưởng */}
@@ -227,116 +171,87 @@ export default function Activity3Form() {
                 1. Phát triển ý tưởng
               </h3>
 
-              <div className="bg-indigo-50 p-4 rounded-lg space-y-3">
+              <div className="bg-indigo-50 p-4 rounded-lg space-y-4">
                 <p className="font-semibold text-gray-800">
-                  Prompt AI định hướng:
+                  Prompt AI định hướng
                 </p>
 
                 <div>
-                  <Label className="text-sm font-medium">Mục đích:</Label>
-                  <Input
-                    value={formData.aiPrompt.purpose}
+                  <Label className="text-sm font-medium mb-2 block">
+                    Mục đích & bối cảnh:
+                  </Label>
+                  <Textarea
+                    value={formData.section1.purposeContext}
                     onChange={(e) =>
-                      handlePromptChange("purpose", e.target.value)
+                      handleSection1Change("purposeContext", e.target.value)
                     }
-                    placeholder="Nhập mục đích..."
-                    className="mt-1"
+                    rows={3}
+                    placeholder="Nhập mục đích và bối cảnh thiết kế..."
+                    required
+                    className="resize-none"
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Nhập mục đích và bối cảnh thiết kế
+                  </p>
                 </div>
 
                 <div>
-                  <Label className="text-sm font-medium">Bối cảnh:</Label>
-                  <Input
-                    value={formData.aiPrompt.context}
+                  <Label className="text-sm font-medium mb-2 block">
+                    Tiêu chí & chức năng:
+                  </Label>
+                  <Textarea
+                    value={formData.section1.criteriaFunction}
                     onChange={(e) =>
-                      handlePromptChange("context", e.target.value)
+                      handleSection1Change("criteriaFunction", e.target.value)
                     }
-                    placeholder="Nhập bối cảnh..."
-                    className="mt-1"
+                    rows={3}
+                    placeholder="Nhập tiêu chí và chức năng thiết kế..."
+                    required
+                    className="resize-none"
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Nhập tiêu chí và chức năng thiết kế
+                  </p>
                 </div>
 
                 <div>
-                  <Label className="text-sm font-medium">Tiêu chí:</Label>
-                  <Input
-                    value={formData.aiPrompt.criteria}
+                  <Label className="text-sm font-medium mb-2 block">
+                    Prompt và minh họa (Soạn prompt AI và kèm hình ảnh ý tưởng):
+                  </Label>
+                  <Textarea
+                    value={formData.section1.promptAndImage}
                     onChange={(e) =>
-                      handlePromptChange("criteria", e.target.value)
+                      handleSection1Change("promptAndImage", e.target.value)
                     }
-                    placeholder="Nhập tiêu chí..."
-                    className="mt-1"
+                    rows={4}
+                    placeholder="Nhập prompt AI đầy đủ và mô tả hình ảnh ý tưởng..."
+                    required
+                    className="resize-none"
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Nhập prompt AI đầy đủ và mô tả hình ảnh ý tưởng
+                  </p>
                 </div>
 
                 <div>
-                  <Label className="text-sm font-medium">
-                    Hình dạng cơ bản:
+                  <Label className="text-sm font-medium mb-2 block">
+                    Tải lên hình ảnh ý tưởng:
                   </Label>
                   <Input
-                    value={formData.aiPrompt.basicShape}
-                    onChange={(e) =>
-                      handlePromptChange("basicShape", e.target.value)
-                    }
-                    placeholder="Nhập hình dạng cơ bản..."
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        handleSection1Change("ideaImages", Array.from(e.target.files))
+                      }
+                    }}
                     className="mt-1"
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Chấp nhận: JPG, PNG. Có thể tải nhiều ảnh
+                  </p>
                 </div>
-
-                <div>
-                  <Label className="text-sm font-medium">
-                    Chức năng đặc biệt:
-                  </Label>
-                  <Input
-                    value={formData.aiPrompt.specialFunction}
-                    onChange={(e) =>
-                      handlePromptChange("specialFunction", e.target.value)
-                    }
-                    placeholder="Nhập chức năng đặc biệt..."
-                    className="mt-1"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label className="text-sm font-medium mb-2 block">
-                  Prompt của tôi:
-                </Label>
-                <Textarea
-                  value={formData.aiPrompt.fullPrompt}
-                  onChange={(e) =>
-                    handlePromptChange("fullPrompt", e.target.value)
-                  }
-                  rows={6}
-                  placeholder="Nhập prompt đầy đủ của bạn..."
-                  required
-                  className="resize-none"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  {formData.aiPrompt.fullPrompt.length} / 50 ký tự tối thiểu
-                </p>
-              </div>
-
-              <div>
-                <Label className="text-sm font-medium mb-2 block">
-                  Ảnh minh họa ý tưởng:
-                </Label>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={(e) => {
-                    if (e.target.files) {
-                      setFormData((prev) => ({
-                        ...prev,
-                        ideaImages: Array.from(e.target.files || []),
-                      }))
-                    }
-                  }}
-                  className="mt-1"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Chấp nhận: JPG, PNG. Có thể tải nhiều ảnh
-                </p>
               </div>
             </div>
           </Card>
@@ -345,34 +260,12 @@ export default function Activity3Form() {
           <Card className="p-6">
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-indigo-600 mb-4">
-                2. Dựng mô hình 3D và tạo bản vẽ 2D (Pha 3.2 – 15 phút)
+                2. Dựng mô hình 3D và tạo bản vẽ 2D
               </h3>
 
               <div>
                 <Label className="text-sm font-medium mb-2 block">
-                  Mô hình 3D:
-                </Label>
-                <Textarea
-                  value={formData.model3D}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      model3D: e.target.value,
-                    }))
-                  }
-                  rows={4}
-                  placeholder="Mô tả mô hình 3D..."
-                  required
-                  className="resize-none"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  {formData.model3D.length} / 30 ký tự tối thiểu
-                </p>
-              </div>
-
-              <div>
-                <Label className="text-sm font-medium mb-2 block">
-                  Tải lên ảnh mô hình 3D:
+                  Ảnh mô hình 3D
                 </Label>
                 <Input
                   type="file"
@@ -380,10 +273,7 @@ export default function Activity3Form() {
                   multiple
                   onChange={(e) => {
                     if (e.target.files) {
-                      setFormData((prev) => ({
-                        ...prev,
-                        model3DImages: Array.from(e.target.files || []),
-                      }))
+                      handleSection2Change("model3DImages", Array.from(e.target.files))
                     }
                   }}
                   className="mt-1"
@@ -393,71 +283,24 @@ export default function Activity3Form() {
                 </p>
               </div>
 
-              <div className="bg-gray-50 p-4 rounded-lg space-y-3">
-                <p className="font-semibold text-gray-800">Ảnh kỹ thuật 2D:</p>
-
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">
-                    Mặt đứng:
-                  </Label>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        // Store file for front view
-                        const file = e.target.files[0]
-                        console.log("Front view file:", file.name)
-                      }
-                    }}
-                    className="mt-1"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Tải lên ảnh mặt đứng (JPG, PNG)
-                  </p>
-                </div>
-
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">
-                    Mặt bằng:
-                  </Label>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        // Store file for top view
-                        const file = e.target.files[0]
-                        console.log("Top view file:", file.name)
-                      }
-                    }}
-                    className="mt-1"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Tải lên ảnh mặt bằng (JPG, PNG)
-                  </p>
-                </div>
-
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">
-                    Mặt cạnh:
-                  </Label>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        // Store file for side view
-                        const file = e.target.files[0]
-                        console.log("Side view file:", file.name)
-                      }
-                    }}
-                    className="mt-1"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Tải lên ảnh mặt cạnh (JPG, PNG)
-                  </p>
-                </div>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">
+                  Ảnh kỹ thuật 2D (Gồm bản vẽ mặt đứng, mặt bằng, mặt cạnh)
+                </Label>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => {
+                    if (e.target.files) {
+                      handleSection2Change("technical2DImages", Array.from(e.target.files))
+                    }
+                  }}
+                  className="mt-1"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Tải lên 3 ảnh: mặt đứng, mặt bằng, mặt cạnh (JPG, PNG)
+                </p>
               </div>
             </div>
           </Card>
@@ -466,12 +309,12 @@ export default function Activity3Form() {
           <Card className="p-6">
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-indigo-600 mb-4">
-                3. Chuyển sang bản vẽ CAD (Pha 3.3 – 10 phút)
+                3. Chuyển sang bản vẽ CAD
               </h3>
 
               <div>
                 <Label className="text-sm font-medium mb-2 block">
-                  File CAD/Hình ảnh CAD:
+                  File CAD/Hình ảnh CAD
                 </Label>
                 <Input
                   type="file"
@@ -479,10 +322,7 @@ export default function Activity3Form() {
                   multiple
                   onChange={(e) => {
                     if (e.target.files) {
-                      setFormData((prev) => ({
-                        ...prev,
-                        cadFiles: Array.from(e.target.files || []),
-                      }))
+                      handleSection3Change("cadFiles", Array.from(e.target.files))
                     }
                   }}
                   className="mt-1"
@@ -494,52 +334,11 @@ export default function Activity3Form() {
             </div>
           </Card>
 
-          {/* Section 4: Sản phẩm cuối cùng */}
+          {/* Section 4: Bảng tự đánh giá */}
           <Card className="p-6">
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-indigo-600 mb-4">
-                III. Sản phẩm cuối cùng
-              </h3>
-
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                <p className="text-gray-700 font-medium mb-2">
-                  Chuỗi bản vẽ hoàn chỉnh:
-                </p>
-                <p className="text-sm text-gray-600">
-                  Ảnh ý tưởng → Mô hình 3D → 3 ảnh kỹ thuật 2D → File CAD
-                </p>
-              </div>
-
-              <div>
-                <Label className="text-sm font-medium mb-2 block">
-                  Chuẩn bị cho Hoạt động 4 (Chế tạo mô hình) - Nguyên vật liệu
-                  cần chuẩn bị:
-                </Label>
-                <Textarea
-                  value={formData.materials}
-                  onChange={(e) =>
-                    setFormData((prev) => ({
-                      ...prev,
-                      materials: e.target.value,
-                    }))
-                  }
-                  rows={5}
-                  placeholder="Liệt kê các nguyên vật liệu cần chuẩn bị..."
-                  required
-                  className="resize-none"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  {formData.materials.length} / 30 ký tự tối thiểu
-                </p>
-              </div>
-            </div>
-          </Card>
-
-          {/* Section 5: Bảng tự đánh giá */}
-          <Card className="p-6">
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold text-indigo-600 mb-4">
-                IV. Bảng tự đánh giá
+                4. Bảng tự đánh giá
               </h3>
 
               <div className="overflow-x-auto">
@@ -564,7 +363,7 @@ export default function Activity3Form() {
                     {[
                       {
                         key: "criteriaCompliance" as const,
-                        label: "Ý tưởng tuân thủ tiêu chí kỹ thuật",
+                        label: "Ý tưởng tuân thủ tiêu chí đánh giá",
                       },
                       {
                         key: "model3DBalance" as const,
@@ -577,10 +376,6 @@ export default function Activity3Form() {
                       {
                         key: "cadAccuracy" as const,
                         label: "Bản vẽ CAD chính xác",
-                      },
-                      {
-                        key: "designLogic" as const,
-                        label: "Hồ sơ thiết kế logic, mạch lạc",
                       },
                     ].map((item) => (
                       <tr key={item.key} className="hover:bg-gray-50">

@@ -4,43 +4,238 @@ import { useState } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { BackButton } from "@/components/ui/back-button"
 
 interface Activity4FormData {
-  question1: string
-  question2: string
-  question3: string
+  // A. Tự đánh giá nhóm mình
+  selfEvaluation: {
+    strengths: string
+    weaknesses: string
+    improvements: Array<{
+      id: number
+      improvement: string
+    }>
+  }
+
+  // B. Đánh giá nhóm bạn
+  peerEvaluation: {
+    strengths: string
+    weaknesses: string
+    improvements: Array<{
+      id: number
+      improvement: string
+    }>
+  }
+
+  // C. Đánh giá vai trò và tác dụng của AI trong dự án
+  aiEvaluation: {
+    ratings: {
+      creativity: number
+      simulation: number
+      analysis: number
+      presentation: number
+    }
+    notes: {
+      creativity: string
+      simulation: string
+      analysis: string
+      presentation: string
+    }
+    aiImpact: string
+    aiLimitations: string
+  }
 }
 
 export default function Activity4Form() {
   const [formData, setFormData] = useState<Activity4FormData>({
-    question1: "",
-    question2: "",
-    question3: "",
+    selfEvaluation: {
+      strengths: "",
+      weaknesses: "",
+      improvements: [
+        { id: 1, improvement: "" },
+        { id: 2, improvement: "" },
+      ],
+    },
+    peerEvaluation: {
+      strengths: "",
+      weaknesses: "",
+      improvements: [
+        { id: 1, improvement: "" },
+        { id: 2, improvement: "" },
+      ],
+    },
+    aiEvaluation: {
+      ratings: {
+        creativity: 0,
+        simulation: 0,
+        analysis: 0,
+        presentation: 0,
+      },
+      notes: {
+        creativity: "",
+        simulation: "",
+        analysis: "",
+        presentation: "",
+      },
+      aiImpact: "",
+      aiLimitations: "",
+    },
   })
 
-  const handleChange = (field: keyof Activity4FormData, value: string) => {
+  const handleSelfEvaluationChange = (
+    field: keyof Activity4FormData["selfEvaluation"],
+    value: string | Array<{ id: number; improvement: string }>
+  ) => {
     setFormData((prev) => ({
       ...prev,
-      [field]: value,
+      selfEvaluation: {
+        ...prev.selfEvaluation,
+        [field]: value,
+      },
     }))
+  }
+
+  const handlePeerEvaluationChange = (
+    field: keyof Activity4FormData["peerEvaluation"],
+    value: string | Array<{ id: number; improvement: string }>
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      peerEvaluation: {
+        ...prev.peerEvaluation,
+        [field]: value,
+      },
+    }))
+  }
+
+  const handleAIEvaluationChange = (
+    section: "ratings" | "notes",
+    field: string,
+    value: number | string
+  ) => {
+    setFormData((prev) => ({
+      ...prev,
+      aiEvaluation: {
+        ...prev.aiEvaluation,
+        [section]: {
+          ...prev.aiEvaluation[section],
+          [field]: value,
+        },
+      },
+    }))
+  }
+
+  const handleAITextChange = (field: "aiImpact" | "aiLimitations", value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      aiEvaluation: {
+        ...prev.aiEvaluation,
+        [field]: value,
+      },
+    }))
+  }
+
+  const updateImprovement = (
+    section: "selfEvaluation" | "peerEvaluation",
+    index: number,
+    value: string
+  ) => {
+    const currentImprovements = formData[section].improvements
+    const updatedImprovements = currentImprovements.map((item, i) =>
+      i === index ? { ...item, improvement: value } : item
+    )
+    
+    if (section === "selfEvaluation") {
+      handleSelfEvaluationChange("improvements", updatedImprovements)
+    } else {
+      handlePeerEvaluationChange("improvements", updatedImprovements)
+    }
+  }
+
+  const addImprovement = (section: "selfEvaluation" | "peerEvaluation") => {
+    const currentImprovements = formData[section].improvements
+    if (currentImprovements.length < 5) {
+      const newImprovement = {
+        id: currentImprovements.length + 1,
+        improvement: "",
+      }
+      const updatedImprovements = [...currentImprovements, newImprovement]
+      
+      if (section === "selfEvaluation") {
+        handleSelfEvaluationChange("improvements", updatedImprovements)
+      } else {
+        handlePeerEvaluationChange("improvements", updatedImprovements)
+      }
+    }
+  }
+
+  const removeImprovement = (section: "selfEvaluation" | "peerEvaluation", index: number) => {
+    const currentImprovements = formData[section].improvements
+    if (currentImprovements.length > 1) {
+      const updatedImprovements = currentImprovements
+        .filter((_, i) => i !== index)
+        .map((item, i) => ({ ...item, id: i + 1 }))
+      
+      if (section === "selfEvaluation") {
+        handleSelfEvaluationChange("improvements", updatedImprovements)
+      } else {
+        handlePeerEvaluationChange("improvements", updatedImprovements)
+      }
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Validation - minimum 50 characters for each question
-    const minLength = 50
-    const questions = [
-      { field: "question1", label: "Câu hỏi 1" },
-      { field: "question2", label: "Câu hỏi 2" },
-      { field: "question3", label: "Câu hỏi 3" },
-    ]
+    // Validation - check if fields are filled
+    // Validate self evaluation
+    if (!formData.selfEvaluation.strengths.trim()) {
+      alert("Tự đánh giá - Ưu điểm: Vui lòng nhập nội dung")
+      return
+    }
+    if (!formData.selfEvaluation.weaknesses.trim()) {
+      alert("Tự đánh giá - Nhược điểm: Vui lòng nhập nội dung")
+      return
+    }
 
-    for (const q of questions) {
-      if (formData[q.field as keyof Activity4FormData].length < minLength) {
-        alert(`${q.label}: Vui lòng nhập ít nhất ${minLength} ký tự`)
-        return
-      }
+    // Validate peer evaluation
+    if (!formData.peerEvaluation.strengths.trim()) {
+      alert("Đánh giá nhóm bạn - Ưu điểm: Vui lòng nhập nội dung")
+      return
+    }
+    if (!formData.peerEvaluation.weaknesses.trim()) {
+      alert("Đánh giá nhóm bạn - Nhược điểm: Vui lòng nhập nội dung")
+      return
+    }
+
+    // Validate AI evaluation ratings
+    const ratings = Object.values(formData.aiEvaluation.ratings)
+    if (ratings.some(rating => rating === 0)) {
+      alert("Vui lòng đánh giá tất cả các hoạt động AI (chọn từ 1-5)")
+      return
+    }
+
+    // Validate AI text fields
+    if (!formData.aiEvaluation.aiImpact.trim()) {
+      alert("Vui lòng mô tả tác động của AI")
+      return
+    }
+    if (!formData.aiEvaluation.aiLimitations.trim()) {
+      alert("Vui lòng mô tả hạn chế của AI")
+      return
+    }
+
+    // Validate improvements
+    const incompleteImprovements = [
+      ...formData.selfEvaluation.improvements,
+      ...formData.peerEvaluation.improvements
+    ].some(item => !item.improvement.trim())
+    
+    if (incompleteImprovements) {
+      alert("Vui lòng hoàn thành tất cả các biện pháp cải tiến")
+      return
     }
 
     // TODO: Submit to API
@@ -54,25 +249,7 @@ export default function Activity4Form() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         {/* Back Button */}
-        <a
-          href="/group"
-          className="inline-flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900 transition-colors font-medium mb-6"
-        >
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          Quay lại
-        </a>
+        <BackButton href="/group" />
 
         {/* Header */}
         <Card className="p-8 bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 mb-6">
@@ -86,123 +263,305 @@ export default function Activity4Form() {
           </div>
         </Card>
 
-        {/* Purpose Box */}
-        <Card className="p-6 bg-blue-50 border-l-4 border-blue-500 mb-6">
-          <div className="flex items-start gap-3">
-            <span className="text-3xl">🎯</span>
-            <div>
-              <h3 className="font-semibold text-gray-800 mb-3 text-lg">
-                I. Mục tiêu
-              </h3>
-              <ul className="text-gray-700 space-y-2">
-                <li>
-                  • Trình bày và phản biện quy trình thiết kế thuyền.
-                </li>
-                <li>
-                  • Đánh giá kết quả thử nghiệm và đề xuất cải tiến.
-                </li>
-                <li>
-                  • Hoàn thiện hồ sơ kỹ thuật số và mô hình thuyền đáp ứng tiêu
-                  chí: nổi - ổn định - an toàn - thân thiện môi trường.
-                </li>
-              </ul>
-            </div>
-          </div>
-        </Card>
 
-        {/* Tasks Section */}
-        <Card className="p-6 bg-cyan-50 border-l-4 border-cyan-500 mb-8">
-          <div className="flex items-start gap-3">
-            <span className="text-3xl">📝</span>
-            <div>
-              <h3 className="font-semibold text-gray-800 text-lg">
-                II. Nhiệm vụ học tập
-              </h3>
-            </div>
-          </div>
-        </Card>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Question 1 */}
+          {/* Section A: Tự đánh giá nhóm mình */}
           <Card className="p-6">
             <div className="space-y-4">
+              <h3 className="text-xl font-bold text-blue-600 mb-4">
+                A. Tự đánh giá nhóm mình
+              </h3>
+
               <div>
-                <h3 className="text-xl font-bold text-blue-600 mb-3">
-                  Quy trình thiết kế và kết quả thử nghiệm:
-                </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  Hãy mô tả ngắn gọn các bước thiết kế bạn thực hiện, kết quả
-                  thử nghiệm nổi/chìm và các cải tiến đã đề xuất.
-                </p>
-              </div>
-              <div>
+                <Label className="text-sm font-medium mb-2 block">
+                  Ưu điểm
+                </Label>
                 <Textarea
-                  value={formData.question1}
-                  onChange={(e) => handleChange("question1", e.target.value)}
-                  rows={8}
-                  placeholder="Nhập câu trả lời của nhóm..."
+                  value={formData.selfEvaluation.strengths}
+                  onChange={(e) => handleSelfEvaluationChange("strengths", e.target.value)}
+                  rows={4}
+                  placeholder="Nhập các ưu điểm của nhóm mình..."
                   required
                   className="resize-none"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  {formData.question1.length} / 50 ký tự tối thiểu
+                  Nhập các ưu điểm của nhóm mình
                 </p>
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">
+                  Nhược điểm
+                </Label>
+                <Textarea
+                  value={formData.selfEvaluation.weaknesses}
+                  onChange={(e) => handleSelfEvaluationChange("weaknesses", e.target.value)}
+                  rows={4}
+                  placeholder="Nhập các nhược điểm của nhóm mình..."
+                  required
+                  className="resize-none"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Nhập các nhược điểm của nhóm mình
+                </p>
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">
+                  Đề xuất các biện pháp cải tiến sản phẩm nhóm mình:
+                </Label>
+                <div className="space-y-3">
+                  {formData.selfEvaluation.improvements.map((item, index) => (
+                    <div key={item.id} className="flex items-center gap-3">
+                      <div className="w-8 px-2 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded text-center">
+                        {item.id}
+                      </div>
+                      <Input
+                        value={item.improvement}
+                        onChange={(e) => updateImprovement("selfEvaluation", index, e.target.value)}
+                        placeholder="Nhập biện pháp cải tiến..."
+                        required
+                        className="flex-1"
+                      />
+                      {formData.selfEvaluation.improvements.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeImprovement("selfEvaluation", index)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 w-8 h-8 p-0"
+                        >
+                          ×
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                  
+                  {formData.selfEvaluation.improvements.length < 5 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => addImprovement("selfEvaluation")}
+                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-300"
+                    >
+                      + Thêm biện pháp
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </Card>
 
-          {/* Question 2 */}
+          {/* Section B: Đánh giá nhóm bạn */}
           <Card className="p-6">
             <div className="space-y-4">
+              <h3 className="text-xl font-bold text-blue-600 mb-4">
+                B. Đánh giá nhóm bạn
+              </h3>
+
               <div>
-                <h3 className="text-xl font-bold text-blue-600 mb-3">
-                  Vai trò AI trong thiết kế và hoàn thiện hồ sơ:
-                </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  AI đã hỗ trợ bạn những gì trong quá trình thiết kế, phân tích
-                  và lập hồ sơ kỹ thuật?
-                </p>
-              </div>
-              <div>
+                <Label className="text-sm font-medium mb-2 block">
+                  Ưu điểm
+                </Label>
                 <Textarea
-                  value={formData.question2}
-                  onChange={(e) => handleChange("question2", e.target.value)}
-                  rows={8}
-                  placeholder="Nhập câu trả lời của nhóm..."
+                  value={formData.peerEvaluation.strengths}
+                  onChange={(e) => handlePeerEvaluationChange("strengths", e.target.value)}
+                  rows={4}
+                  placeholder="Nhập các ưu điểm của nhóm bạn..."
                   required
                   className="resize-none"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  {formData.question2.length} / 50 ký tự tối thiểu
+                  Nhập các ưu điểm của nhóm bạn
                 </p>
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">
+                  Nhược điểm
+                </Label>
+                <Textarea
+                  value={formData.peerEvaluation.weaknesses}
+                  onChange={(e) => handlePeerEvaluationChange("weaknesses", e.target.value)}
+                  rows={4}
+                  placeholder="Nhập các nhược điểm của nhóm bạn..."
+                  required
+                  className="resize-none"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Nhập các nhược điểm của nhóm bạn
+                </p>
+              </div>
+
+              <div>
+                <Label className="text-sm font-medium mb-2 block">
+                  Đề xuất các biện pháp cải tiến sản phẩm nhóm bạn:
+                </Label>
+                <div className="space-y-3">
+                  {formData.peerEvaluation.improvements.map((item, index) => (
+                    <div key={item.id} className="flex items-center gap-3">
+                      <div className="w-8 px-2 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded text-center">
+                        {item.id}
+                      </div>
+                      <Input
+                        value={item.improvement}
+                        onChange={(e) => updateImprovement("peerEvaluation", index, e.target.value)}
+                        placeholder="Nhập biện pháp cải tiến..."
+                        required
+                        className="flex-1"
+                      />
+                      {formData.peerEvaluation.improvements.length > 1 && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeImprovement("peerEvaluation", index)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 w-8 h-8 p-0"
+                        >
+                          ×
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                  
+                  {formData.peerEvaluation.improvements.length < 5 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => addImprovement("peerEvaluation")}
+                      className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-300"
+                    >
+                      + Thêm biện pháp
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </Card>
 
-          {/* Question 3 */}
+          {/* Section C: Đánh giá vai trò và tác dụng của AI trong dự án */}
           <Card className="p-6">
-            <div className="space-y-4">
+            <div className="space-y-6">
+              <h3 className="text-xl font-bold text-blue-600 mb-4">
+                C. Đánh giá vai trò và tác dụng của AI trong dự án
+              </h3>
+
               <div>
-                <h3 className="text-xl font-bold text-blue-600 mb-3">
-                  Hồ sơ kỹ thuật và đánh giá sản phẩm:
-                </h3>
-                <p className="text-gray-700 leading-relaxed">
-                  Hồ sơ kỹ thuật của nhóm bạn có đầy đủ các bản vẽ, nhật ký, mô
-                  hình và đáp ứng tiêu chí kỹ thuật không? Hãy tự đánh giá.
-                </p>
+                <Label className="text-sm font-medium mb-3 block">
+                  Đánh giá mức độ hữu ích của AI (1 = ít hữu ích, 5 = cực kỳ hữu ích)
+                </Label>
+                
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse">
+                    <thead>
+                      <tr className="bg-blue-100">
+                        <th className="border border-gray-300 p-3 text-left font-semibold">
+                          Hoạt động
+                        </th>
+                        <th className="border border-gray-300 p-3 text-center font-semibold w-12">1</th>
+                        <th className="border border-gray-300 p-3 text-center font-semibold w-12">2</th>
+                        <th className="border border-gray-300 p-3 text-center font-semibold w-12">3</th>
+                        <th className="border border-gray-300 p-3 text-center font-semibold w-12">4</th>
+                        <th className="border border-gray-300 p-3 text-center font-semibold w-12">5</th>
+                        <th className="border border-gray-300 p-3 text-left font-semibold">
+                          Ghi chú
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        {
+                          key: "creativity" as const,
+                          label: "Hỗ trợ sáng tạo và phát triển ý tưởng thiết kế",
+                        },
+                        {
+                          key: "simulation" as const,
+                          label: "Hỗ trợ mô phỏng và kiểm tra nguyên lý kỹ thuật",
+                        },
+                        {
+                          key: "analysis" as const,
+                          label: "Hỗ trợ phân tích dữ liệu và đánh giá hiệu quả",
+                        },
+                        {
+                          key: "presentation" as const,
+                          label: "Hỗ trợ báo cáo, trình bày và trực quan hóa kết quả",
+                        },
+                      ].map((item) => (
+                        <tr key={item.key} className="hover:bg-gray-50">
+                          <td className="border border-gray-300 p-3">
+                            {item.label}
+                          </td>
+                          {[1, 2, 3, 4, 5].map((rating) => (
+                            <td key={rating} className="border border-gray-300 p-3 text-center">
+                              <input
+                                type="radio"
+                                name={`rating-${item.key}`}
+                                value={rating}
+                                checked={formData.aiEvaluation.ratings[item.key] === rating}
+                                onChange={() => handleAIEvaluationChange("ratings", item.key, rating)}
+                                className="w-4 h-4"
+                                required
+                              />
+                            </td>
+                          ))}
+                          <td className="border border-gray-300 p-3">
+                            <Input
+                              value={formData.aiEvaluation.notes[item.key]}
+                              onChange={(e) =>
+                                handleAIEvaluationChange("notes", item.key, e.target.value)
+                              }
+                              placeholder="Ghi chú..."
+                              className="w-full"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
+
               <div>
-                <Textarea
-                  value={formData.question3}
-                  onChange={(e) => handleChange("question3", e.target.value)}
-                  rows={8}
-                  placeholder="Nhập câu trả lời của nhóm..."
-                  required
-                  className="resize-none"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  {formData.question3.length} / 50 ký tự tối thiểu
-                </p>
+                <Label className="text-sm font-medium mb-2 block">
+                  Nhận xét về tác động của AI:
+                </Label>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-sm font-medium mb-2 block">
+                      AI đã nâng cao chất lượng và hiệu quả dự án như thế nào:
+                    </Label>
+                    <Textarea
+                      value={formData.aiEvaluation.aiImpact}
+                      onChange={(e) => handleAITextChange("aiImpact", e.target.value)}
+                      rows={4}
+                      placeholder="Mô tả tác động tích cực của AI đối với dự án..."
+                      required
+                      className="resize-none"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Mô tả tác động tích cực của AI đối với dự án
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label className="text-sm font-medium mb-2 block">
+                      Những hạn chế hoặc khó khăn khi sử dụng AI:
+                    </Label>
+                    <Textarea
+                      value={formData.aiEvaluation.aiLimitations}
+                      onChange={(e) => handleAITextChange("aiLimitations", e.target.value)}
+                      rows={4}
+                      placeholder="Mô tả các hạn chế và khó khăn khi sử dụng AI..."
+                      required
+                      className="resize-none"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Mô tả các hạn chế và khó khăn khi sử dụng AI
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </Card>
