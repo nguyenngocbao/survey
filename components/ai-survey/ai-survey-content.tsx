@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
+import { AISurveySuccess } from './ai-survey-success'
 
 interface AISurveyData {
   // PHẦN 1: THÔNG TIN CƠ BẢN
@@ -44,6 +45,7 @@ interface AISurveyData {
 }
 
 export function AISurveyContent() {
+  const [isSubmitted, setIsSubmitted] = useState(false)
   const [formData, setFormData] = useState<AISurveyData>({
     personalInfo: {
       fullName: '',
@@ -122,9 +124,33 @@ export function AISurveyContent() {
       return
     }
 
-    // TODO: Submit to API
-    console.log('Submitting AI survey:', formData)
-    alert('🎉 Cảm ơn bạn đã hoàn thành khảo sát về AI!')
+    try {
+      const response = await fetch('/api/ai-surveys', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        setIsSubmitted(true)
+        console.log('Survey submitted successfully:', result.surveyId)
+      } else {
+        alert('Có lỗi xảy ra khi gửi khảo sát. Vui lòng thử lại.')
+        console.error('Survey submission error:', result.error)
+      }
+    } catch (error) {
+      console.error('Error submitting survey:', error)
+      alert('Có lỗi xảy ra khi gửi khảo sát. Vui lòng thử lại.')
+    }
+  }
+
+  // Show success page if submitted
+  if (isSubmitted) {
+    return <AISurveySuccess />
   }
 
   return (
@@ -137,8 +163,8 @@ export function AISurveyContent() {
           
           <div className="relative space-y-12">
             {/* Main Title */}
-            <div className="text-center space-y-4">
-              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent">
+            <div className="text-center space-y-4 pt-4">
+              <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 bg-clip-text text-transparent pt-4">
                 KHẢO SÁT HỌC SINH
               </h1>
               <h2 className="text-2xl md:text-3xl font-bold text-gray-800">
