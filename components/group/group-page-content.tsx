@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { GroupHeaderCard } from "./group-header-card"
 import { GroupInfoForm } from "./group-info-form"
 import { GroupActivities } from "./group-activities"

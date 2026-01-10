@@ -5,9 +5,7 @@ const GroupInfoSchema = new mongoose.Schema({
   groupName: { type: String, required: true },
   groupCode: { type: String, required: true }, // Mã nhóm
   leaderName: { type: String, required: true },
-  leaderEmail: { type: String, required: true },
-  leaderPhone: { type: String, required: true },
-  memberCount: { type: Number, required: true, min: 2, max: 10 },
+  memberCount: { type: Number, required: true },
   class: { type: String, required: true },
   subject: { type: String, required: true }, // Môn học
   groupAvatar: { type: String }, // URL ảnh nhóm
@@ -85,6 +83,11 @@ const GroupSurveySchema = new mongoose.Schema({
   membersInfo: MembersInfoSchema,
   projectActivities: ProjectActivitiesSchema,
   evaluationFeedback: EvaluationFeedbackSchema,
+  // New activity fields
+  activity1: { type: mongoose.Schema.Types.Mixed }, // Bí ẩn dòng nước
+  activity2: { type: mongoose.Schema.Types.Mixed }, // Khám phá thủy lực
+  activity3: { type: mongoose.Schema.Types.Mixed }, // Thiết kế kỳ diệu
+  activity4: { type: mongoose.Schema.Types.Mixed }, // Bản vẽ toả sáng
   completedSections: {
     groupInfo: { type: Boolean, default: false },
     members: { type: Boolean, default: false },

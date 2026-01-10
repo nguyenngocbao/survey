@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { BackButton } from "@/components/ui/back-button"
+import { useNotification } from "@/components/ui/notification-popup"
 
 interface Activity2FormData {
   question1: string
@@ -31,6 +32,56 @@ export function Activity2Form() {
         usage: "",
       })),
   })
+  const [isLoading, setIsLoading] = useState(true)
+  const [groupName, setGroupName] = useState<string | null>(null)
+  const { showError, showSuccess, showWarning, NotificationComponent } = useNotification()
+
+  // Load existing data on component mount
+  useEffect(() => {
+    const loadExistingData = async () => {
+      const storedGroupName = localStorage.getItem('groupName')
+      
+      if (!storedGroupName) {
+        // No group name, redirect to group page
+        showError('Vui lòng chọn nhóm trước khi làm hoạt động', 'Thiếu thông tin nhóm')
+        setTimeout(() => {
+          window.location.href = '/group'
+        }, 2000)
+        return
+      }
+
+      setGroupName(storedGroupName)
+
+      // Try to load existing activity data
+      try {
+        const response = await fetch(`/api/group-surveys/activities?groupName=${encodeURIComponent(storedGroupName)}&activityNumber=2`)
+        
+        if (response.ok) {
+          const result = await response.json()
+          if (result.success && result.data.activityData) {
+            setFormData(result.data.activityData)
+          }
+        }
+      } catch (error) {
+        console.error('Error loading existing data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadExistingData()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang tải dữ liệu...</p>
+        </div>
+      </div>
+    )
+  }
 
   const handleChange = (field: "question1" | "question2" | "question3", value: string) => {
     setFormData((prev) => ({
@@ -89,7 +140,7 @@ export function Activity2Form() {
 
     for (const q of textQuestions) {
       if (!formData[q.field as keyof Pick<Activity2FormData, "question1" | "question2" | "question3">].trim()) {
-        alert(`${q.label}: Vui lòng nhập câu trả lời`)
+        showError(`${q.label}: Vui lòng nhập câu trả lời`, 'Thiếu thông tin')
         return
       }
     }
@@ -99,15 +150,47 @@ export function Activity2Form() {
       (item) => !item.step.trim() || !item.aiTool.trim() || !item.usage.trim()
     )
     if (incompleteTable) {
-      alert("Câu 4: Vui lòng hoàn thành tất cả các bước, công cụ AI và cách sử dụng")
+      showError("Câu 4: Vui lòng hoàn thành tất cả các bước, công cụ AI và cách sử dụng", 'Thiếu thông tin')
       return
     }
 
-    // TODO: Submit to API
-    console.log("Activity 2 data:", formData)
+    // Get group name from localStorage
+    const currentGroupName = groupName || localStorage.getItem('groupName')
+    if (!currentGroupName) {
+      showError('Không tìm thấy thông tin nhóm. Vui lòng quay lại trang nhóm.', 'Thiếu thông tin nhóm')
+      setTimeout(() => {
+        window.location.href = '/group'
+      }, 2000)
+      return
+    }
 
-    alert("Đã hoàn thành Hoạt động 2!")
-    window.location.href = "/group"
+    try {
+      const response = await fetch('/api/group-surveys/activities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          groupName: currentGroupName,
+          activityNumber: 2,
+          activityData: formData
+        }),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        showSuccess("Đã hoàn thành Hoạt động 2!", 'Thành công')
+        setTimeout(() => {
+          window.location.href = "/group"
+        }, 2000)
+      } else {
+        showError(`Lỗi: ${result.error}`, 'Lỗi lưu dữ liệu')
+      }
+    } catch (error) {
+      console.error('Error submitting activity 2:', error)
+      showError('Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại.', 'Lỗi hệ thống')
+    }
   }
 
   return (
@@ -312,6 +395,7 @@ export function Activity2Form() {
           </div>
         </form>
       </div>
+      <NotificationComponent />
     </div>
   )
 }

@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { BackButton } from "@/components/ui/back-button"
+import { useNotification } from "@/components/ui/notification-popup"
 
 interface Activity1FormData {
   tableA: {
@@ -25,6 +26,7 @@ interface Activity1FormData {
 }
 
 export function Activity1Form() {
+  const { showError, showSuccess, showWarning, NotificationComponent } = useNotification()
   const [formData, setFormData] = useState<Activity1FormData>({
     tableA: {
       initialCriteria: Array(5)
@@ -45,6 +47,53 @@ export function Activity1Form() {
         })),
     },
   })
+  const [isLoading, setIsLoading] = useState(true)
+  const [groupName, setGroupName] = useState<string | null>(null)
+
+  // Load existing data on component mount
+  useEffect(() => {
+    const loadExistingData = async () => {
+      const storedGroupName = localStorage.getItem('groupName')
+      
+      if (!storedGroupName) {
+        // No group name, redirect to group page
+        showWarning('Vui lòng chọn nhóm trước khi làm hoạt động', 'Thiếu thông tin nhóm')
+        setTimeout(() => window.location.href = '/group', 2000)
+        return
+      }
+
+      setGroupName(storedGroupName)
+
+      // Try to load existing activity data
+      try {
+        const response = await fetch(`/api/group-surveys/activities?groupName=${encodeURIComponent(storedGroupName)}&activityNumber=1`)
+        
+        if (response.ok) {
+          const result = await response.json()
+          if (result.success && result.data.activityData) {
+            setFormData(result.data.activityData)
+          }
+        }
+      } catch (error) {
+        console.error('Error loading existing data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadExistingData()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-violet-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang tải dữ liệu...</p>
+        </div>
+      </div>
+    )
+  }
 
   const handleTableAChange = (
     index: number,
@@ -146,7 +195,7 @@ export function Activity1Form() {
       (item) => !item.criterion.trim() || !item.basis.trim()
     )
     if (incompleteTableA) {
-      alert("Bảng A: Vui lòng hoàn thành tất cả các tiêu chí và cơ sở lựa chọn")
+      showWarning("Vui lòng hoàn thành tất cả các tiêu chí và cơ sở lựa chọn", "Bảng A: Thiếu thông tin")
       return
     }
 
@@ -155,19 +204,48 @@ export function Activity1Form() {
       (item) => !item.technicalCriterion.trim() || !item.description.trim()
     )
     if (incompleteTableB) {
-      alert("Bảng B: Vui lòng hoàn thành tất cả tiêu chí kỹ thuật và mô tả")
+      showWarning("Vui lòng hoàn thành tất cả tiêu chí kỹ thuật và mô tả", "Bảng B: Thiếu thông tin")
       return
     }
 
-    // TODO: Submit to API
-    console.log("Activity 1 data:", formData)
+    // Get group name from localStorage
+    const currentGroupName = groupName || localStorage.getItem('groupName')
+    if (!currentGroupName) {
+      showError('Không tìm thấy thông tin nhóm. Vui lòng quay lại trang nhóm.', 'Lỗi nhóm')
+      setTimeout(() => window.location.href = '/group', 2000)
+      return
+    }
 
-    alert("Đã hoàn thành Hoạt động 1!")
-    window.location.href = "/group"
+    try {
+      const response = await fetch('/api/group-surveys/activities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          groupName: currentGroupName,
+          activityNumber: 1,
+          activityData: formData
+        }),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        showSuccess("Đã hoàn thành Hoạt động 1!", "Thành công")
+        setTimeout(() => window.location.href = "/group", 2000)
+      } else {
+        showError(result.error || 'Có lỗi xảy ra', 'Lỗi')
+      }
+    } catch (error) {
+      console.error('Error submitting activity 1:', error)
+      showError('Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại.', 'Lỗi kết nối')
+    }
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
+      <NotificationComponent />
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Back Button */}
         <BackButton href="/group" />

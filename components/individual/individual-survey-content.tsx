@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { useNotification } from '@/components/ui/notification-popup'
 
 interface IndividualSurveyData {
   personalInfo: {
@@ -19,7 +20,22 @@ interface IndividualSurveyData {
   }
 }
 
+interface SurveyStats {
+  totalCount: number
+  completedCount: number
+  pendingCount: number
+  recentSurveys: Array<{
+    _id: string
+    personalInfo: {
+      fullName: string
+      class: string
+    }
+    submittedAt: string
+  }>
+}
+
 export function IndividualSurveyContent() {
+  const { showError, showSuccess, NotificationComponent } = useNotification()
   const [formData, setFormData] = useState<IndividualSurveyData>({
     personalInfo: {
       fullName: '',
@@ -31,6 +47,35 @@ export function IndividualSurveyContent() {
       question3: ''
     }
   })
+
+  const [stats, setStats] = useState<SurveyStats>({
+    totalCount: 0,
+    completedCount: 0,
+    pendingCount: 0,
+    recentSurveys: []
+  })
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSubmitted, setIsSubmitted] = useState(false)
+
+  // Load stats on component mount
+  useEffect(() => {
+    loadStats()
+  }, [])
+
+  const loadStats = async () => {
+    try {
+      const response = await fetch('/api/individual-surveys/stats')
+      if (response.ok) {
+        const result = await response.json()
+        if (result.success) {
+          setStats(result.data)
+        }
+      }
+    } catch (error) {
+      console.error('Error loading stats:', error)
+    }
+  }
 
   const handlePersonalInfoChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -57,32 +102,68 @@ export function IndividualSurveyContent() {
 
     // Validation
     if (!formData.personalInfo.fullName || !formData.personalInfo.class) {
-      alert('Vui lòng điền đầy đủ thông tin cá nhân bắt buộc')
+      showError('Vui lòng điền đầy đủ thông tin cá nhân bắt buộc', 'Thiếu thông tin')
       return
     }
 
     if (!formData.responses.question1.trim()) {
-      alert('Câu 1: Vui lòng nhập câu trả lời')
+      showError('Vui lòng nhập câu trả lời', 'Câu 1: Thiếu câu trả lời')
       return
     }
 
     if (!formData.responses.question2.trim()) {
-      alert('Câu 2: Vui lòng nhập câu trả lời')
+      showError('Vui lòng nhập câu trả lời', 'Câu 2: Thiếu câu trả lời')
       return
     }
 
     if (!formData.responses.question3.trim()) {
-      alert('Câu 3: Vui lòng nhập câu trả lời')
+      showError('Vui lòng nhập câu trả lời', 'Câu 3: Thiếu câu trả lời')
       return
     }
 
-    // TODO: Submit to API
-    console.log('Submitting survey:', formData)
-    alert('🎉 Cảm ơn bạn đã hoàn thành khảo sát!')
+    setIsSubmitting(true)
+
+    try {
+      const response = await fetch('/api/individual-surveys', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        setIsSubmitted(true)
+        showSuccess('Cảm ơn bạn đã hoàn thành khảo sát!', 'Hoàn thành thành công')
+        // Reload stats to show updated data
+        loadStats()
+      } else {
+        showError(result.error || 'Có lỗi xảy ra', 'Lỗi')
+      }
+    } catch (error) {
+      console.error('Error submitting survey:', error)
+      showError('Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại.', 'Lỗi kết nối')
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60))
+    
+    if (diffInMinutes < 1) return 'Vừa xong'
+    if (diffInMinutes < 60) return `${diffInMinutes} phút trước`
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)} giờ trước`
+    return `${Math.floor(diffInMinutes / 1440)} ngày trước`
   }
 
   return (
     <div className="w-full max-w-6xl space-y-8">
+      <NotificationComponent />
       {/* Single Section - All in One */}
       <form onSubmit={handleSubmit}>
         <Card className="relative overflow-hidden p-10 md:p-12 bg-white/95 backdrop-blur-sm shadow-2xl border-0 rounded-3xl">
@@ -235,13 +316,30 @@ export function IndividualSurveyContent() {
               <Button
                 type="submit"
                 size="lg"
-                className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-12 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105"
+                disabled={isSubmitting || isSubmitted}
+                className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white px-12 py-6 text-lg font-semibold shadow-xl hover:shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               >
                 <span className="flex items-center gap-3">
-                  Hoàn thành
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+                  {isSubmitting ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                      Đang lưu...
+                    </>
+                  ) : isSubmitted ? (
+                    <>
+                      Đã hoàn thành
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </>
+                  ) : (
+                    <>
+                      Hoàn thành
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </>
+                  )}
                 </span>
               </Button>
             </div>
@@ -269,12 +367,12 @@ export function IndividualSurveyContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="bg-gradient-to-br from-green-50 to-emerald-100 rounded-xl p-6 border-2 border-green-200 text-center hover:scale-105 transition-transform">
               <div className="text-4xl mb-2">✅</div>
-              <div className="text-4xl font-bold text-gray-800 mb-1">0</div>
+              <div className="text-4xl font-bold text-gray-800 mb-1">{stats.completedCount}</div>
               <div className="text-sm text-gray-700 font-semibold">Đã hoàn thành</div>
             </div>
             <div className="bg-gradient-to-br from-orange-50 to-amber-100 rounded-xl p-6 border-2 border-orange-200 text-center hover:scale-105 transition-transform">
               <div className="text-4xl mb-2">⏳</div>
-              <div className="text-4xl font-bold text-gray-800 mb-1">0</div>
+              <div className="text-4xl font-bold text-gray-800 mb-1">{stats.pendingCount}</div>
               <div className="text-sm text-gray-700 font-semibold">Đang thực hiện</div>
             </div>
           </div>
@@ -286,32 +384,32 @@ export function IndividualSurveyContent() {
               Danh sách đã hoàn thành
             </h3>
             
-            {/* Member List - Dynamic (will be populated with real data) */}
+            {/* Member List - Dynamic */}
             <div className="space-y-2 max-h-64 overflow-y-auto">
-              {/* Empty state - will be replaced when there's data */}
-              <div className="text-center py-8 text-gray-500">
-                <div className="text-4xl mb-3">📝</div>
-                <p className="text-sm italic">Chưa có học sinh nào hoàn thành khảo sát</p>
-                <p className="text-xs text-gray-400 mt-2">Danh sách sẽ cập nhật tự động khi có người hoàn thành</p>
-              </div>
-              
-              {/* Example of how completed member will look (hidden by default) */}
-              {/* 
-              <div className="flex items-center gap-3 bg-white p-3 rounded-lg border border-green-200 hover:shadow-md transition-shadow">
-                <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                  1
+              {stats.recentSurveys.length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  <div className="text-4xl mb-3">📝</div>
+                  <p className="text-sm italic">Chưa có học sinh nào hoàn thành khảo sát</p>
+                  <p className="text-xs text-gray-400 mt-2">Danh sách sẽ cập nhật tự động khi có người hoàn thành</p>
                 </div>
-                <div className="flex-1">
-                  <p className="font-medium text-gray-800">Nguyễn Văn A</p>
-                  <p className="text-xs text-gray-500">Lớp 10A1 • 2 phút trước</p>
-                </div>
-                <div className="text-green-600">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-              </div>
-              */}
+              ) : (
+                stats.recentSurveys.map((survey, index) => (
+                  <div key={survey._id} className="flex items-center gap-3 bg-white p-3 rounded-lg border border-green-200 hover:shadow-md transition-shadow">
+                    <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                      {index + 1}
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-gray-800">{survey.personalInfo.fullName}</p>
+                      <p className="text-xs text-gray-500">Lớp {survey.personalInfo.class} • {formatTimeAgo(survey.submittedAt)}</p>
+                    </div>
+                    <div className="text-green-600">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 

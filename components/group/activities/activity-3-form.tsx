@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { BackButton } from "@/components/ui/back-button"
+import { useNotification } from "@/components/ui/notification-popup"
 
 interface Activity3FormData {
   // 1. Phát triển ý tưởng
@@ -60,6 +61,72 @@ export default function Activity3Form() {
       cadAccuracy: { achieved: false, note: "" },
     },
   })
+  const [isLoading, setIsLoading] = useState(true)
+  const [groupName, setGroupName] = useState<string | null>(null)
+  const { showError, showSuccess, showWarning, NotificationComponent } = useNotification()
+
+  // Load existing data on component mount
+  useEffect(() => {
+    const loadExistingData = async () => {
+      const storedGroupName = localStorage.getItem('groupName')
+      
+      if (!storedGroupName) {
+        // No group name, redirect to group page
+        showError('Vui lòng chọn nhóm trước khi làm hoạt động', 'Thiếu thông tin nhóm')
+        setTimeout(() => {
+          window.location.href = '/group'
+        }, 2000)
+        return
+      }
+
+      setGroupName(storedGroupName)
+
+      // Try to load existing activity data
+      try {
+        const response = await fetch(`/api/group-surveys/activities?groupName=${encodeURIComponent(storedGroupName)}&activityNumber=3`)
+        
+        if (response.ok) {
+          const result = await response.json()
+          if (result.success && result.data.activityData) {
+            // Note: File inputs cannot be pre-populated for security reasons
+            // Only load text data, not file data
+            const loadedData = result.data.activityData
+            setFormData({
+              ...loadedData,
+              section1: {
+                ...loadedData.section1,
+                ideaImages: [], // Reset file arrays
+              },
+              section2: {
+                model3DImages: [],
+                technical2DImages: [],
+              },
+              section3: {
+                cadFiles: [],
+              },
+            })
+          }
+        }
+      } catch (error) {
+        console.error('Error loading existing data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadExistingData()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang tải dữ liệu...</p>
+        </div>
+      </div>
+    )
+  }
 
   const handleSection1Change = (
     field: keyof Activity3FormData["section1"],
@@ -122,25 +189,57 @@ export default function Activity3Form() {
 
     // Basic validation
     if (!formData.section1.purposeContext.trim()) {
-      alert("Vui lòng nhập mục đích & bối cảnh")
+      showError("Vui lòng nhập mục đích & bối cảnh", 'Thiếu thông tin')
       return
     }
 
     if (!formData.section1.criteriaFunction.trim()) {
-      alert("Vui lòng nhập tiêu chí & chức năng")
+      showError("Vui lòng nhập tiêu chí & chức năng", 'Thiếu thông tin')
       return
     }
 
     if (!formData.section1.promptAndImage.trim()) {
-      alert("Vui lòng nhập prompt và minh họa")
+      showError("Vui lòng nhập prompt và minh họa", 'Thiếu thông tin')
       return
     }
 
-    // TODO: Submit to API
-    console.log("Activity 3 data:", formData)
+    // Get group name from localStorage
+    const currentGroupName = groupName || localStorage.getItem('groupName')
+    if (!currentGroupName) {
+      showError('Không tìm thấy thông tin nhóm. Vui lòng quay lại trang nhóm.', 'Thiếu thông tin nhóm')
+      setTimeout(() => {
+        window.location.href = '/group'
+      }, 2000)
+      return
+    }
 
-    alert("Đã hoàn thành Hoạt động 3!")
-    window.location.href = "/group"
+    try {
+      const response = await fetch('/api/group-surveys/activities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          groupName: currentGroupName,
+          activityNumber: 3,
+          activityData: formData
+        }),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        showSuccess("Đã hoàn thành Hoạt động 3!", 'Thành công')
+        setTimeout(() => {
+          window.location.href = "/group"
+        }, 2000)
+      } else {
+        showError(`Lỗi: ${result.error}`, 'Lỗi lưu dữ liệu')
+      }
+    } catch (error) {
+      console.error('Error submitting activity 3:', error)
+      showError('Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại.', 'Lỗi hệ thống')
+    }
   }
 
   return (
@@ -444,6 +543,7 @@ export default function Activity3Form() {
           </div>
         </form>
       </div>
+      <NotificationComponent />
     </div>
   )
 }

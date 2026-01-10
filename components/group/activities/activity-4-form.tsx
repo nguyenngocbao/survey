@@ -1,12 +1,13 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { BackButton } from "@/components/ui/back-button"
+import { useNotification } from "@/components/ui/notification-popup"
 
 interface Activity4FormData {
   // A. Tự đánh giá nhóm mình
@@ -83,6 +84,56 @@ export default function Activity4Form() {
       aiLimitations: "",
     },
   })
+  const [isLoading, setIsLoading] = useState(true)
+  const [groupName, setGroupName] = useState<string | null>(null)
+  const { showError, showSuccess, showWarning, NotificationComponent } = useNotification()
+
+  // Load existing data on component mount
+  useEffect(() => {
+    const loadExistingData = async () => {
+      const storedGroupName = localStorage.getItem('groupName')
+      
+      if (!storedGroupName) {
+        // No group name, redirect to group page
+        showError('Vui lòng chọn nhóm trước khi làm hoạt động', 'Thiếu thông tin nhóm')
+        setTimeout(() => {
+          window.location.href = '/group'
+        }, 2000)
+        return
+      }
+
+      setGroupName(storedGroupName)
+
+      // Try to load existing activity data
+      try {
+        const response = await fetch(`/api/group-surveys/activities?groupName=${encodeURIComponent(storedGroupName)}&activityNumber=4`)
+        
+        if (response.ok) {
+          const result = await response.json()
+          if (result.success && result.data.activityData) {
+            setFormData(result.data.activityData)
+          }
+        }
+      } catch (error) {
+        console.error('Error loading existing data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    loadExistingData()
+  }, [])
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Đang tải dữ liệu...</p>
+        </div>
+      </div>
+    )
+  }
 
   const handleSelfEvaluationChange = (
     field: keyof Activity4FormData["selfEvaluation"],
@@ -192,38 +243,38 @@ export default function Activity4Form() {
     // Validation - check if fields are filled
     // Validate self evaluation
     if (!formData.selfEvaluation.strengths.trim()) {
-      alert("Tự đánh giá - Ưu điểm: Vui lòng nhập nội dung")
+      showError("Tự đánh giá - Ưu điểm: Vui lòng nhập nội dung", 'Thiếu thông tin')
       return
     }
     if (!formData.selfEvaluation.weaknesses.trim()) {
-      alert("Tự đánh giá - Nhược điểm: Vui lòng nhập nội dung")
+      showError("Tự đánh giá - Nhược điểm: Vui lòng nhập nội dung", 'Thiếu thông tin')
       return
     }
 
     // Validate peer evaluation
     if (!formData.peerEvaluation.strengths.trim()) {
-      alert("Đánh giá nhóm bạn - Ưu điểm: Vui lòng nhập nội dung")
+      showError("Đánh giá nhóm bạn - Ưu điểm: Vui lòng nhập nội dung", 'Thiếu thông tin')
       return
     }
     if (!formData.peerEvaluation.weaknesses.trim()) {
-      alert("Đánh giá nhóm bạn - Nhược điểm: Vui lòng nhập nội dung")
+      showError("Đánh giá nhóm bạn - Nhược điểm: Vui lòng nhập nội dung", 'Thiếu thông tin')
       return
     }
 
     // Validate AI evaluation ratings
     const ratings = Object.values(formData.aiEvaluation.ratings)
     if (ratings.some(rating => rating === 0)) {
-      alert("Vui lòng đánh giá tất cả các hoạt động AI (chọn từ 1-5)")
+      showError("Vui lòng đánh giá tất cả các hoạt động AI (chọn từ 1-5)", 'Thiếu thông tin')
       return
     }
 
     // Validate AI text fields
     if (!formData.aiEvaluation.aiImpact.trim()) {
-      alert("Vui lòng mô tả tác động của AI")
+      showError("Vui lòng mô tả tác động của AI", 'Thiếu thông tin')
       return
     }
     if (!formData.aiEvaluation.aiLimitations.trim()) {
-      alert("Vui lòng mô tả hạn chế của AI")
+      showError("Vui lòng mô tả hạn chế của AI", 'Thiếu thông tin')
       return
     }
 
@@ -234,15 +285,47 @@ export default function Activity4Form() {
     ].some(item => !item.improvement.trim())
     
     if (incompleteImprovements) {
-      alert("Vui lòng hoàn thành tất cả các biện pháp cải tiến")
+      showError("Vui lòng hoàn thành tất cả các biện pháp cải tiến", 'Thiếu thông tin')
       return
     }
 
-    // TODO: Submit to API
-    console.log("Activity 4 data:", formData)
+    // Get group name from localStorage
+    const currentGroupName = groupName || localStorage.getItem('groupName')
+    if (!currentGroupName) {
+      showError('Không tìm thấy thông tin nhóm. Vui lòng quay lại trang nhóm.', 'Thiếu thông tin nhóm')
+      setTimeout(() => {
+        window.location.href = '/group'
+      }, 2000)
+      return
+    }
 
-    alert("Đã hoàn thành Hoạt động 4!")
-    window.location.href = "/group"
+    try {
+      const response = await fetch('/api/group-surveys/activities', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          groupName: currentGroupName,
+          activityNumber: 4,
+          activityData: formData
+        }),
+      })
+
+      const result = await response.json()
+
+      if (result.success) {
+        showSuccess("Đã hoàn thành Hoạt động 4!", 'Thành công')
+        setTimeout(() => {
+          window.location.href = "/group"
+        }, 2000)
+      } else {
+        showError(`Lỗi: ${result.error}`, 'Lỗi lưu dữ liệu')
+      }
+    } catch (error) {
+      console.error('Error submitting activity 4:', error)
+      showError('Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại.', 'Lỗi hệ thống')
+    }
   }
 
   return (
@@ -578,6 +661,7 @@ export default function Activity4Form() {
           </div>
         </form>
       </div>
+      <NotificationComponent />
     </div>
   )
 }

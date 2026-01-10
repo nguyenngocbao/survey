@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { TeacherSurveySuccess } from './teacher-survey-success'
+import { useNotification } from '@/components/ui/notification-popup'
 
 interface TeacherSurveyData {
   // Thông tin cơ bản
@@ -72,6 +73,7 @@ export function TeacherSurveyContent() {
       improvementSuggestions: ''
     }
   })
+  const { showError, showSuccess, NotificationComponent } = useNotification()
 
   const handlePersonalInfoChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -115,7 +117,7 @@ export function TeacherSurveyContent() {
 
     // Basic validation
     if (!formData.personalInfo.fullName || !formData.personalInfo.educationLevel) {
-      alert('Vui lòng điền đầy đủ thông tin cơ bản bắt buộc')
+      showError('Vui lòng điền đầy đủ thông tin cơ bản bắt buộc', 'Thiếu thông tin')
       return
     }
 
@@ -134,12 +136,12 @@ export function TeacherSurveyContent() {
         setIsSubmitted(true)
         console.log('Survey submitted successfully:', result.surveyId)
       } else {
-        alert('Có lỗi xảy ra khi gửi khảo sát. Vui lòng thử lại.')
+        showError('Có lỗi xảy ra khi gửi khảo sát. Vui lòng thử lại.', 'Lỗi gửi khảo sát')
         console.error('Survey submission error:', result.error)
       }
     } catch (error) {
       console.error('Error submitting survey:', error)
-      alert('Có lỗi xảy ra khi gửi khảo sát. Vui lòng thử lại.')
+      showError('Có lỗi xảy ra khi gửi khảo sát. Vui lòng thử lại.', 'Lỗi hệ thống')
     }
   }
 
@@ -754,6 +756,7 @@ export function TeacherSurveyContent() {
           </p>
         </div>
       </Card>
+      <NotificationComponent />
     </div>
   )
 }
