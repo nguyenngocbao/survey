@@ -24,13 +24,13 @@ interface SurveyStats {
   totalCount: number
   completedCount: number
   pendingCount: number
-  recentSurveys: Array<{
+  recent: Array<{
     _id: string
     personalInfo: {
       fullName: string
       class: string
     }
-    submittedAt: string
+    createdAt: string
   }>
 }
 
@@ -52,7 +52,7 @@ export function IndividualSurveyContent() {
     totalCount: 0,
     completedCount: 0,
     pendingCount: 0,
-    recentSurveys: []
+    recent: []
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -386,21 +386,21 @@ export function IndividualSurveyContent() {
             
             {/* Member List - Dynamic */}
             <div className="space-y-2 max-h-64 overflow-y-auto">
-              {stats.recentSurveys.length === 0 ? (
+              {stats.recent?.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">
                   <div className="text-4xl mb-3">📝</div>
                   <p className="text-sm italic">Chưa có học sinh nào hoàn thành khảo sát</p>
                   <p className="text-xs text-gray-400 mt-2">Danh sách sẽ cập nhật tự động khi có người hoàn thành</p>
                 </div>
               ) : (
-                stats.recentSurveys.map((survey, index) => (
+                stats.recent?.map((survey, index) => (
                   <div key={survey._id} className="flex items-center gap-3 bg-white p-3 rounded-lg border border-green-200 hover:shadow-md transition-shadow">
                     <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
                       {index + 1}
                     </div>
                     <div className="flex-1">
                       <p className="font-medium text-gray-800">{survey.personalInfo.fullName}</p>
-                      <p className="text-xs text-gray-500">Lớp {survey.personalInfo.class} • {formatTimeAgo(survey.submittedAt)}</p>
+                      <p className="text-xs text-gray-500">Lớp {survey.personalInfo.class} • {formatTimeAgo(survey.createdAt)}</p>
                     </div>
                     <div className="text-green-600">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,72 +1,48 @@
 import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
-import IndividualSurvey from '@/lib/models/IndividualSurvey'
+import mongoose from 'mongoose'
 
 export async function GET(request: NextRequest) {
   try {
     await connectDB()
     
-    // Get survey statistics
-    const totalCount = await IndividualSurvey.countDocuments()
+    // Get total count
+    const total = await mongoose.connection.db.collection('individualSurveys').countDocuments()
     
-    // Get recent surveys (last 10)
-    const recentSurveys = await IndividualSurvey.find({})
-      .select('personalInfo.fullName personalInfo.class submittedAt')
-      .sort({ submittedAt: -1 })
+    // Get today's count
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    
+    const todayCount = await mongoose.connection.db.collection('individualSurveys').countDocuments({
+      createdAt: {
+        $gte: today,
+        $lt: tomorrow
+      }
+    })
+    
+    // Get recent surveys
+    const recent = await mongoose.connection.db
+      .collection('individualSurveys')
+      .find({})
+      .sort({ createdAt: -1 })
       .limit(10)
-
-    // Get surveys by class
-    const surveysByClass = await IndividualSurvey.aggregate([
-      {
-        $group: {
-          _id: '$personalInfo.class',
-          count: { $sum: 1 }
-        }
-      },
-      {
-        $sort: { count: -1 }
-      }
-    ])
-
-    // Get surveys by date (last 7 days)
-    const sevenDaysAgo = new Date()
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-    
-    const surveysByDate = await IndividualSurvey.aggregate([
-      {
-        $match: {
-          submittedAt: { $gte: sevenDaysAgo }
-        }
-      },
-      {
-        $group: {
-          _id: {
-            $dateToString: { format: "%Y-%m-%d", date: "$submittedAt" }
-          },
-          count: { $sum: 1 }
-        }
-      },
-      {
-        $sort: { _id: 1 }
-      }
-    ])
+      .toArray()
 
     return NextResponse.json({
       success: true,
       data: {
-        totalCount,
-        completedCount: totalCount,
+        totalCount: total,
+        completedCount: total, // All individual surveys are considered completed
         pendingCount: 0,
-        recentSurveys,
-        surveysByClass,
-        surveysByDate
+        recent
       }
     })
-
   } catch (error) {
     console.error('Error fetching individual survey stats:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { success: false, error: 'Failed to fetch stats' },
       { status: 500 }
     )
   }

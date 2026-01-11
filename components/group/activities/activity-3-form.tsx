@@ -372,7 +372,9 @@ export default function Activity3Form() {
                   multiple
                   onChange={(e) => {
                     if (e.target.files) {
-                      handleSection2Change("model3DImages", Array.from(e.target.files))
+                      const newFiles = Array.from(e.target.files)
+                      const existingFiles = formData.section2.model3DImages
+                      handleSection2Change("model3DImages", [...existingFiles, ...newFiles])
                     }
                   }}
                   className="mt-1"
@@ -380,6 +382,44 @@ export default function Activity3Form() {
                 <p className="text-xs text-gray-500 mt-1">
                   Chấp nhận: JPG, PNG, OBJ, STL
                 </p>
+                
+                {/* File List */}
+                {formData.section2.model3DImages.length > 0 && (
+                  <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
+                    <p className="text-sm font-medium mb-2 text-gray-700">
+                      File đã chọn ({formData.section2.model3DImages.length}):
+                    </p>
+                    <div className="space-y-2">
+                      {formData.section2.model3DImages.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between bg-white p-2 rounded border">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 bg-indigo-100 rounded flex items-center justify-center">
+                              <span className="text-xs text-indigo-600 font-medium">
+                                {file.name.split('.').pop()?.toUpperCase().slice(0, 3)}
+                              </span>
+                            </div>
+                            <span className="text-sm text-gray-700 truncate max-w-xs">{file.name}</span>
+                            <span className="text-xs text-gray-500">
+                              ({(file.size / 1024).toFixed(1)} KB)
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newFiles = formData.section2.model3DImages.filter((_, i) => i !== index)
+                              handleSection2Change("model3DImages", newFiles)
+                            }}
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>
@@ -392,14 +432,52 @@ export default function Activity3Form() {
                   multiple
                   onChange={(e) => {
                     if (e.target.files) {
-                      handleSection2Change("technical2DImages", Array.from(e.target.files))
+                      const newFiles = Array.from(e.target.files)
+                      const existingFiles = formData.section2.technical2DImages
+                      handleSection2Change("technical2DImages", [...existingFiles, ...newFiles])
                     }
                   }}
                   className="mt-1"
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Tải lên 3 ảnh: mặt đứng, mặt bằng, mặt cạnh (JPG, PNG)
+                  Tải lên nhiều ảnh: mặt đứng, mặt bằng, mặt cạnh (JPG, PNG)
                 </p>
+                
+                {/* File List */}
+                {formData.section2.technical2DImages.length > 0 && (
+                  <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
+                    <p className="text-sm font-medium mb-2 text-gray-700">
+                      Ảnh đã chọn ({formData.section2.technical2DImages.length}):
+                    </p>
+                    <div className="space-y-2">
+                      {formData.section2.technical2DImages.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between bg-white p-2 rounded border">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 bg-indigo-100 rounded flex items-center justify-center">
+                              <span className="text-xs text-indigo-600 font-medium">IMG</span>
+                            </div>
+                            <span className="text-sm text-gray-700 truncate max-w-xs">{file.name}</span>
+                            <span className="text-xs text-gray-500">
+                              ({(file.size / 1024).toFixed(1)} KB)
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newFiles = formData.section2.technical2DImages.filter((_, i) => i !== index)
+                              handleSection2Change("technical2DImages", newFiles)
+                            }}
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </Card>
@@ -421,7 +499,9 @@ export default function Activity3Form() {
                   multiple
                   onChange={(e) => {
                     if (e.target.files) {
-                      handleSection3Change("cadFiles", Array.from(e.target.files))
+                      const newFiles = Array.from(e.target.files)
+                      const existingFiles = formData.section3.cadFiles
+                      handleSection3Change("cadFiles", [...existingFiles, ...newFiles])
                     }
                   }}
                   className="mt-1"
@@ -429,6 +509,44 @@ export default function Activity3Form() {
                 <p className="text-xs text-gray-500 mt-1">
                   Chấp nhận: DWG, DXF, PDF, JPG, PNG
                 </p>
+                
+                {/* File List */}
+                {formData.section3.cadFiles.length > 0 && (
+                  <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
+                    <p className="text-sm font-medium mb-2 text-gray-700">
+                      File CAD đã chọn ({formData.section3.cadFiles.length}):
+                    </p>
+                    <div className="space-y-2">
+                      {formData.section3.cadFiles.map((file, index) => (
+                        <div key={index} className="flex items-center justify-between bg-white p-2 rounded border">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 bg-indigo-100 rounded flex items-center justify-center">
+                              <span className="text-xs text-indigo-600 font-medium">
+                                {file.name.split('.').pop()?.toUpperCase().slice(0, 3)}
+                              </span>
+                            </div>
+                            <span className="text-sm text-gray-700 truncate max-w-xs">{file.name}</span>
+                            <span className="text-xs text-gray-500">
+                              ({(file.size / 1024).toFixed(1)} KB)
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newFiles = formData.section3.cadFiles.filter((_, i) => i !== index)
+                              handleSection3Change("cadFiles", newFiles)
+                            }}
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded transition-colors"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </Card>
