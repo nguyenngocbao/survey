@@ -197,7 +197,7 @@ export default function AdminIndividualSurveysPage() {
               const percentage = surveys.length > 0 ? Math.round((answeredCount / surveys.length) * 100) : 0
               
               const questionTitles = {
-                1: 'Khoảng khắc ấn tượng',
+                1: 'Khoảnh khắc ấn tượng',
                 2: 'Điểm tiến bộ nhất',
                 3: 'Đề xuất cải tiến'
               }

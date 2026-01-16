@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
+import { ImageGallery } from '@/components/ui/image-gallery'
 
 interface SurveyDetailModalProps {
   isOpen: boolean
@@ -488,10 +489,10 @@ export function SurveyDetailModal({ isOpen, onClose, surveyId, surveyType }: Sur
           <div className="bg-white/70 rounded-xl p-6 border border-cyan-100">
             <Label className="text-base font-semibold text-gray-800 flex items-center gap-2">
               <span className="text-cyan-600">1</span>
-              Khoảng khắc ấn tượng nhất
+              Khoảnh khắc ấn tượng nhất
             </Label>
             <p className="text-gray-600 mt-1 mb-3">
-              Khoảng khắc nào khiến bạn ấn tượng nhất và nó giúp bạn hiểu gì hơn về AI hoặc thiết kế kỹ thuật?
+              Khoảnh khắc nào khiến bạn ấn tượng nhất và nó giúp bạn hiểu gì hơn về AI hoặc thiết kế kỹ thuật?
             </p>
             <Textarea value={data.responses?.question1 || ''} readOnly className="bg-gray-50" rows={4} />
           </div>
@@ -761,10 +762,8 @@ export function SurveyDetailModal({ isOpen, onClose, surveyId, surveyType }: Sur
                 </div>
                 {data.activity3.section1.ideaImages && data.activity3.section1.ideaImages.length > 0 && (
                   <div>
-                    <Label className="text-base font-semibold text-gray-800">Hình ảnh ý tưởng:</Label>
-                    <div className="mt-2 p-3 bg-gray-50 rounded border">
-                      <span className="text-gray-600">{data.activity3.section1.ideaImages.length} file đã tải lên</span>
-                    </div>
+                    <Label className="text-base font-semibold text-gray-800 mb-3 block">Hình ảnh ý tưởng:</Label>
+                    <ImageGallery images={data.activity3.section1.ideaImages} readOnly />
                   </div>
                 )}
               </div>
@@ -775,21 +774,17 @@ export function SurveyDetailModal({ isOpen, onClose, surveyId, surveyType }: Sur
           {data.activity3.section2 && (
             <div className="bg-white/70 rounded-xl p-6 border border-indigo-100">
               <h4 className="text-lg font-semibold text-indigo-800 mb-4">Phần 2: Mô hình và bản vẽ</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {data.activity3.section2.model3DImages && (
+              <div className="space-y-6">
+                {data.activity3.section2.model3DImages && data.activity3.section2.model3DImages.length > 0 && (
                   <div>
-                    <Label className="text-base font-semibold text-gray-800">Ảnh mô hình 3D:</Label>
-                    <div className="mt-2 p-3 bg-gray-50 rounded border">
-                      <span className="text-gray-600">{data.activity3.section2.model3DImages.length} file đã tải lên</span>
-                    </div>
+                    <Label className="text-base font-semibold text-gray-800 mb-3 block">Ảnh mô hình 3D:</Label>
+                    <ImageGallery images={data.activity3.section2.model3DImages} readOnly />
                   </div>
                 )}
-                {data.activity3.section2.technical2DImages && (
+                {data.activity3.section2.technical2DImages && data.activity3.section2.technical2DImages.length > 0 && (
                   <div>
-                    <Label className="text-base font-semibold text-gray-800">Ảnh vẽ kỹ thuật 2D:</Label>
-                    <div className="mt-2 p-3 bg-gray-50 rounded border">
-                      <span className="text-gray-600">{data.activity3.section2.technical2DImages.length} file đã tải lên</span>
-                    </div>
+                    <Label className="text-base font-semibold text-gray-800 mb-3 block">Ảnh vẽ kỹ thuật 2D:</Label>
+                    <ImageGallery images={data.activity3.section2.technical2DImages} readOnly />
                   </div>
                 )}
               </div>
@@ -800,12 +795,10 @@ export function SurveyDetailModal({ isOpen, onClose, surveyId, surveyType }: Sur
           {data.activity3.section3 && (
             <div className="bg-white/70 rounded-xl p-6 border border-indigo-100">
               <h4 className="text-lg font-semibold text-indigo-800 mb-4">Phần 3: File CAD</h4>
-              {data.activity3.section3.cadFiles && (
+              {data.activity3.section3.cadFiles && data.activity3.section3.cadFiles.length > 0 && (
                 <div>
-                  <Label className="text-base font-semibold text-gray-800">File CAD:</Label>
-                  <div className="mt-2 p-3 bg-gray-50 rounded border">
-                    <span className="text-gray-600">{data.activity3.section3.cadFiles.length} file đã tải lên</span>
-                  </div>
+                  <Label className="text-base font-semibold text-gray-800 mb-3 block">File CAD:</Label>
+                  <ImageGallery images={data.activity3.section3.cadFiles} readOnly />
                 </div>
               )}
             </div>

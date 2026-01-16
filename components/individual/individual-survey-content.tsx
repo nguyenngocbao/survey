@@ -245,10 +245,10 @@ export function IndividualSurveyContent() {
               <div className="space-y-3 bg-white/70 rounded-xl p-6 border border-cyan-100">
                 <Label htmlFor="question1" className="text-lg font-semibold text-gray-800 flex items-center gap-2">
                   <span className="text-cyan-600">1</span>
-                  Khoảng khắc ấn tượng nhất *
+                  Khoảnh khắc ấn tượng nhất *
                 </Label>
                 <p className="text-gray-600 leading-relaxed">
-                  Khoảng khắc nào khiến bạn ấn tượng nhất và nó giúp bạn hiểu gì hơn về AI hoặc thiết kế kỹ thuật?
+                  Khoảnh khắc nào khiến bạn ấn tượng nhất và nó giúp bạn hiểu gì hơn về AI hoặc thiết kế kỹ thuật?
                 </p>
                 <Textarea
                   id="question1"

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { BackButton } from "@/components/ui/back-button"
+import { ImageGallery } from "@/components/ui/image-gallery"
 import { useNotification } from "@/components/ui/notification-popup"
 
 interface Activity3FormData {
@@ -16,18 +17,18 @@ interface Activity3FormData {
     purposeContext: string
     criteriaFunction: string
     promptAndImage: string
-    ideaImages: File[]
+    ideaImages: Array<{name: string, url: string, type: string}>
   }
 
   // 2. Dựng mô hình 3D và tạo bản vẽ 2D
   section2: {
-    model3DImages: File[]
-    technical2DImages: File[]
+    model3DImages: Array<{name: string, url: string, type: string}>
+    technical2DImages: Array<{name: string, url: string, type: string}>
   }
 
   // 3. Chuyển sang bản vẽ CAD
   section3: {
-    cadFiles: File[]
+    cadFiles: Array<{name: string, url: string, type: string}>
   }
 
   // 4. Bảng tự đánh giá
@@ -63,7 +64,45 @@ export default function Activity3Form() {
   })
   const [isLoading, setIsLoading] = useState(true)
   const [groupName, setGroupName] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
   const { showError, showSuccess, showWarning, NotificationComponent } = useNotification()
+
+  // Upload files immediately when selected
+  const uploadFilesImmediately = async (files: FileList | null) => {
+    if (!files || files.length === 0) return []
+    
+    setIsUploading(true)
+    showSuccess('Đang tải file lên...', 'Upload')
+    
+    try {
+      const formData = new FormData()
+      Array.from(files).forEach(file => formData.append('files', file))
+      
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+      })
+      
+      const result = await response.json()
+      if (!result.success) {
+        throw new Error('Upload failed')
+      }
+      
+      showSuccess('Tải file lên thành công!', 'Hoàn thành')
+      
+      return result.urls.map((url: string, index: number) => ({
+        name: files[index].name,
+        url: url,
+        type: files[index].type
+      }))
+    } catch (error) {
+      console.error('Upload error:', error)
+      showError('Lỗi tải file lên', 'Lỗi upload')
+      return []
+    } finally {
+      setIsUploading(false)
+    }
+  }
 
   // Load existing data on component mount
   useEffect(() => {
@@ -88,23 +127,9 @@ export default function Activity3Form() {
         if (response.ok) {
           const result = await response.json()
           if (result.success && result.data.activityData) {
-            // Note: File inputs cannot be pre-populated for security reasons
-            // Only load text data, not file data
+            // Load all data including uploaded images
             const loadedData = result.data.activityData
-            setFormData({
-              ...loadedData,
-              section1: {
-                ...loadedData.section1,
-                ideaImages: [], // Reset file arrays
-              },
-              section2: {
-                model3DImages: [],
-                technical2DImages: [],
-              },
-              section3: {
-                cadFiles: [],
-              },
-            })
+            setFormData(loadedData)
           }
         }
       } catch (error) {
@@ -130,7 +155,7 @@ export default function Activity3Form() {
 
   const handleSection1Change = (
     field: keyof Activity3FormData["section1"],
-    value: string | File[]
+    value: string | Array<{name: string, url: string, type: string}>
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -143,7 +168,7 @@ export default function Activity3Form() {
 
   const handleSection2Change = (
     field: keyof Activity3FormData["section2"],
-    value: File[]
+    value: Array<{name: string, url: string, type: string}>
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -156,7 +181,7 @@ export default function Activity3Form() {
 
   const handleSection3Change = (
     field: keyof Activity3FormData["section3"],
-    value: File[]
+    value: Array<{name: string, url: string, type: string}>
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -214,6 +239,7 @@ export default function Activity3Form() {
     }
 
     try {
+      // Files are already uploaded, just submit the form data
       const response = await fetch('/api/group-surveys/activities', {
         method: 'POST',
         headers: {
@@ -340,16 +366,41 @@ export default function Activity3Form() {
                     type="file"
                     accept="image/*"
                     multiple
-                    onChange={(e) => {
-                      if (e.target.files) {
-                        handleSection1Change("ideaImages", Array.from(e.target.files))
+                    disabled={isUploading}
+                    onChange={async (e) => {
+                      const uploadedFiles = await uploadFilesImmediately(e.target.files)
+                      if (uploadedFiles.length > 0) {
+                        handleSection1Change("ideaImages", [...formData.section1.ideaImages, ...uploadedFiles])
                       }
+                      e.target.value = '' // Reset input
                     }}
                     className="mt-1"
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     Chấp nhận: JPG, PNG. Có thể tải nhiều ảnh
                   </p>
+                  
+                  {/* Preview uploaded images */}
+                  {formData.section1.ideaImages.length > 0 && (
+                    <div className="mt-4">
+                      <ImageGallery 
+                        images={formData.section1.ideaImages}
+                        onRemove={(index) => {
+                          const newImages = formData.section1.ideaImages.filter((_, i) => i !== index)
+                          handleSection1Change("ideaImages", newImages)
+                        }}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSection1Change("ideaImages", [])}
+                        className="mt-2"
+                      >
+                        Xóa tất cả
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -370,12 +421,13 @@ export default function Activity3Form() {
                   type="file"
                   accept="image/*,.obj,.stl"
                   multiple
-                  onChange={(e) => {
-                    if (e.target.files) {
-                      const newFiles = Array.from(e.target.files)
-                      const existingFiles = formData.section2.model3DImages
-                      handleSection2Change("model3DImages", [...existingFiles, ...newFiles])
+                  disabled={isUploading}
+                  onChange={async (e) => {
+                    const uploadedFiles = await uploadFilesImmediately(e.target.files)
+                    if (uploadedFiles.length > 0) {
+                      handleSection2Change("model3DImages", [...formData.section2.model3DImages, ...uploadedFiles])
                     }
+                    e.target.value = '' // Reset input
                   }}
                   className="mt-1"
                 />
@@ -383,41 +435,25 @@ export default function Activity3Form() {
                   Chấp nhận: JPG, PNG, OBJ, STL
                 </p>
                 
-                {/* File List */}
+                {/* Preview uploaded images */}
                 {formData.section2.model3DImages.length > 0 && (
-                  <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
-                    <p className="text-sm font-medium mb-2 text-gray-700">
-                      File đã chọn ({formData.section2.model3DImages.length}):
-                    </p>
-                    <div className="space-y-2">
-                      {formData.section2.model3DImages.map((file, index) => (
-                        <div key={index} className="flex items-center justify-between bg-white p-2 rounded border">
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 bg-indigo-100 rounded flex items-center justify-center">
-                              <span className="text-xs text-indigo-600 font-medium">
-                                {file.name.split('.').pop()?.toUpperCase().slice(0, 3)}
-                              </span>
-                            </div>
-                            <span className="text-sm text-gray-700 truncate max-w-xs">{file.name}</span>
-                            <span className="text-xs text-gray-500">
-                              ({(file.size / 1024).toFixed(1)} KB)
-                            </span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newFiles = formData.section2.model3DImages.filter((_, i) => i !== index)
-                              handleSection2Change("model3DImages", newFiles)
-                            }}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded transition-colors"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                  <div className="mt-4">
+                    <ImageGallery 
+                      images={formData.section2.model3DImages}
+                      onRemove={(index) => {
+                        const newImages = formData.section2.model3DImages.filter((_, i) => i !== index)
+                        handleSection2Change("model3DImages", newImages)
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSection2Change("model3DImages", [])}
+                      className="mt-2"
+                    >
+                      Xóa tất cả
+                    </Button>
                   </div>
                 )}
               </div>
@@ -430,12 +466,13 @@ export default function Activity3Form() {
                   type="file"
                   accept="image/*"
                   multiple
-                  onChange={(e) => {
-                    if (e.target.files) {
-                      const newFiles = Array.from(e.target.files)
-                      const existingFiles = formData.section2.technical2DImages
-                      handleSection2Change("technical2DImages", [...existingFiles, ...newFiles])
+                  disabled={isUploading}
+                  onChange={async (e) => {
+                    const uploadedFiles = await uploadFilesImmediately(e.target.files)
+                    if (uploadedFiles.length > 0) {
+                      handleSection2Change("technical2DImages", [...formData.section2.technical2DImages, ...uploadedFiles])
                     }
+                    e.target.value = '' // Reset input
                   }}
                   className="mt-1"
                 />
@@ -443,39 +480,25 @@ export default function Activity3Form() {
                   Tải lên nhiều ảnh: mặt đứng, mặt bằng, mặt cạnh (JPG, PNG)
                 </p>
                 
-                {/* File List */}
+                {/* Preview uploaded images */}
                 {formData.section2.technical2DImages.length > 0 && (
-                  <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
-                    <p className="text-sm font-medium mb-2 text-gray-700">
-                      Ảnh đã chọn ({formData.section2.technical2DImages.length}):
-                    </p>
-                    <div className="space-y-2">
-                      {formData.section2.technical2DImages.map((file, index) => (
-                        <div key={index} className="flex items-center justify-between bg-white p-2 rounded border">
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 bg-indigo-100 rounded flex items-center justify-center">
-                              <span className="text-xs text-indigo-600 font-medium">IMG</span>
-                            </div>
-                            <span className="text-sm text-gray-700 truncate max-w-xs">{file.name}</span>
-                            <span className="text-xs text-gray-500">
-                              ({(file.size / 1024).toFixed(1)} KB)
-                            </span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newFiles = formData.section2.technical2DImages.filter((_, i) => i !== index)
-                              handleSection2Change("technical2DImages", newFiles)
-                            }}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded transition-colors"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                  <div className="mt-4">
+                    <ImageGallery 
+                      images={formData.section2.technical2DImages}
+                      onRemove={(index) => {
+                        const newImages = formData.section2.technical2DImages.filter((_, i) => i !== index)
+                        handleSection2Change("technical2DImages", newImages)
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSection2Change("technical2DImages", [])}
+                      className="mt-2"
+                    >
+                      Xóa tất cả
+                    </Button>
                   </div>
                 )}
               </div>
@@ -497,12 +520,13 @@ export default function Activity3Form() {
                   type="file"
                   accept=".dwg,.dxf,.pdf,image/*"
                   multiple
-                  onChange={(e) => {
-                    if (e.target.files) {
-                      const newFiles = Array.from(e.target.files)
-                      const existingFiles = formData.section3.cadFiles
-                      handleSection3Change("cadFiles", [...existingFiles, ...newFiles])
+                  disabled={isUploading}
+                  onChange={async (e) => {
+                    const uploadedFiles = await uploadFilesImmediately(e.target.files)
+                    if (uploadedFiles.length > 0) {
+                      handleSection3Change("cadFiles", [...formData.section3.cadFiles, ...uploadedFiles])
                     }
+                    e.target.value = '' // Reset input
                   }}
                   className="mt-1"
                 />
@@ -510,41 +534,25 @@ export default function Activity3Form() {
                   Chấp nhận: DWG, DXF, PDF, JPG, PNG
                 </p>
                 
-                {/* File List */}
+                {/* Preview uploaded files */}
                 {formData.section3.cadFiles.length > 0 && (
-                  <div className="mt-3 p-3 bg-gray-50 rounded-lg border">
-                    <p className="text-sm font-medium mb-2 text-gray-700">
-                      File CAD đã chọn ({formData.section3.cadFiles.length}):
-                    </p>
-                    <div className="space-y-2">
-                      {formData.section3.cadFiles.map((file, index) => (
-                        <div key={index} className="flex items-center justify-between bg-white p-2 rounded border">
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 bg-indigo-100 rounded flex items-center justify-center">
-                              <span className="text-xs text-indigo-600 font-medium">
-                                {file.name.split('.').pop()?.toUpperCase().slice(0, 3)}
-                              </span>
-                            </div>
-                            <span className="text-sm text-gray-700 truncate max-w-xs">{file.name}</span>
-                            <span className="text-xs text-gray-500">
-                              ({(file.size / 1024).toFixed(1)} KB)
-                            </span>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const newFiles = formData.section3.cadFiles.filter((_, i) => i !== index)
-                              handleSection3Change("cadFiles", newFiles)
-                            }}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50 p-1 rounded transition-colors"
-                          >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                          </button>
-                        </div>
-                      ))}
-                    </div>
+                  <div className="mt-4">
+                    <ImageGallery 
+                      images={formData.section3.cadFiles}
+                      onRemove={(index) => {
+                        const newFiles = formData.section3.cadFiles.filter((_, i) => i !== index)
+                        handleSection3Change("cadFiles", newFiles)
+                      }}
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSection3Change("cadFiles", [])}
+                      className="mt-2"
+                    >
+                      Xóa tất cả
+                    </Button>
                   </div>
                 )}
               </div>

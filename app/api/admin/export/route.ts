@@ -154,7 +154,7 @@ function formatIndividualSurveyData(surveys: any[]) {
     'Lớp': survey.personalInfo?.class || '',
     
     // Survey Questions
-    'Câu 1: Khoảng khắc ấn tượng nhất - Khoảng khắc nào khiến bạn ấn tượng nhất và nó giúp bạn hiểu gì hơn về AI hoặc thiết kế kỹ thuật?': survey.responses?.question1 || '',
+    'Câu 1: Khoảnh khắc ấn tượng nhất - Khoảnh khắc nào khiến bạn ấn tượng nhất và nó giúp bạn hiểu gì hơn về AI hoặc thiết kế kỹ thuật?': survey.responses?.question1 || '',
     'Câu 2: Điểm tiến bộ nhất - Sau buổi học, bạn cảm thấy mình tiến bộ nhất ở điểm nào? Vì sao?': survey.responses?.question2 || '',
     'Câu 3: Đề xuất cải tiến - Nếu cải tiến buổi học tiếp theo, bạn muốn thêm hoặc thay đổi điều gì để học hiệu quả hơn?': survey.responses?.question3 || ''
   }))
