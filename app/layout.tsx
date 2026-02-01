@@ -8,8 +8,8 @@ const _nunito = Nunito({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Hồ sơ điện tử - Khảo sát học sinh",
-  description: "Hệ thống khảo sát hồ sơ điện tử dành cho học sinh",
+  title: "Hệ thống Khảo sát - Đại học Sư phạm TP.HCM",
+  description: "Hệ thống khảo sát hồ sơ điện tử dành cho sinh viên Đại học Sư phạm Thành phố Hồ Chí Minh",
 };
 
 export default function RootLayout({
@@ -20,11 +20,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/apple-touch-icon.png"
-        />
+        {/* SVG Favicon - Modern browsers */}
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        {/* Fallback ICO for older browsers */}
+        <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+        {/* PNG Favicons */}
         <link
           rel="icon"
           type="image/png"
@@ -37,6 +37,13 @@ export default function RootLayout({
           sizes="16x16"
           href="/favicon-16x16.png"
         />
+        {/* Apple Touch Icon */}
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        {/* Web App Manifest */}
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body className={`font-sans antialiased`}>

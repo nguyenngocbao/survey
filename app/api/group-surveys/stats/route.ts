@@ -9,15 +9,6 @@ export async function GET() {
     // Get total group surveys
     const totalGroupSurveys = await GroupSurvey.countDocuments()
 
-    // Get completed group surveys
-    const completedGroupSurveys = await GroupSurvey.countDocuments({ isCompleted: true })
-
-    // Get in-progress group surveys
-    const inProgressGroupSurveys = await GroupSurvey.countDocuments({ 
-      isCompleted: false,
-      'completedSections.groupInfo': true 
-    })
-
     // Get today's group submissions
     const today = new Date()
     today.setHours(0, 0, 0, 0)
@@ -31,11 +22,19 @@ export async function GET() {
       }
     })
 
+    // Get recent surveys for display
+    const recentSurveys = await GroupSurvey.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select('groupInfo.groupName groupInfo.leaderName createdAt')
+
     return NextResponse.json({
-      totalGroupSurveys,
-      completedGroupSurveys,
-      inProgressGroupSurveys,
-      todayGroupSubmissions,
+      success: true,
+      data: {
+        total: totalGroupSurveys,
+        today: todayGroupSubmissions,
+        recent: recentSurveys
+      }
     })
 
   } catch (error) {

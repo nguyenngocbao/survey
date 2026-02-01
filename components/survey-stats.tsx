@@ -69,40 +69,60 @@ export function SurveyStats() {
   ];
 
   return (
-    <Card className="w-full max-w-4xl mx-auto p-6 bg-white/90 backdrop-blur-sm shadow-xl border-0 animate-in slide-in-from-bottom-4 duration-700">
-      <div className="text-center mb-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-2">📈 Thống kê khảo sát</h2>
-        <p className="text-sm text-gray-600">Tổng quan về tình hình thực hiện khảo sát</p>
+    <Card className="w-full max-w-5xl mx-auto p-8 md:p-10 bg-white/95 backdrop-blur-sm shadow-2xl border-0 animate-in slide-in-from-bottom-4 duration-700 rounded-3xl">
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center gap-3 mb-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+            <span className="text-xl">📈</span>
+          </div>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Thống kê khảo sát
+          </h2>
+        </div>
+        <p className="text-gray-600 text-lg">Tổng quan về tình hình thực hiện khảo sát</p>
       </div>
 
       {loading ? (
-        <div className="text-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="text-gray-500 mt-2">Đang tải thống kê...</p>
+        <div className="text-center py-12">
+          <div className="relative inline-block">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-blue-600 mx-auto"></div>
+            <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-xl animate-pulse"></div>
+          </div>
+          <p className="text-gray-500 mt-4 font-medium">Đang tải thống kê...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {statItems.map((item, index) => (
             <div
               key={index}
-              className={`p-4 rounded-lg ${item.bgColor} border border-gray-200 text-center transition-transform hover:scale-105`}
+              className={`relative overflow-hidden p-6 rounded-2xl ${item.bgColor} border-2 border-gray-200 text-center transition-all duration-500 hover:scale-105 hover:shadow-xl group`}
             >
-              <div className="text-2xl mb-2">{item.icon}</div>
-              <div className={`text-2xl font-bold ${item.color} mb-1`}>
-                {item.value}
-              </div>
-              <div className="text-xs text-gray-600 font-medium">
-                {item.title}
+              {/* Decorative gradient */}
+              <div className={`absolute top-0 right-0 w-20 h-20 ${item.bgColor} opacity-50 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700`}></div>
+              
+              <div className="relative">
+                <div className="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300">
+                  {item.icon}
+                </div>
+                <div className={`text-4xl font-bold ${item.color} mb-2 group-hover:scale-110 transition-transform duration-300`}>
+                  {item.value}
+                </div>
+                <div className="text-sm text-gray-700 font-semibold">
+                  {item.title}
+                </div>
               </div>
             </div>
           ))}
         </div>
       )}
 
-      <div className="mt-6 text-center">
-        <p className="text-xs text-gray-500 italic">
-          Dữ liệu được cập nhật theo thời gian thực
-        </p>
+      <div className="mt-8 text-center pt-6 border-t border-gray-200">
+        <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+          <svg className="w-4 h-4 text-blue-500 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          <span className="italic">Dữ liệu được cập nhật theo thời gian thực</span>
+        </div>
       </div>
     </Card>
   );

@@ -1,63 +1,38 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { validateFile, generateFileName, uploadToR2, fileToBuffer } from '@/lib/upload-utils';
+import { NextRequest, NextResponse } from 'next/server'
+import { uploadToR2 } from '@/lib/r2'
 
 export async function POST(request: NextRequest) {
   try {
-    // Check if R2 is configured
-    if (!process.env.R2_ACCOUNT_ID || !process.env.R2_ACCESS_KEY_ID) {
-      return NextResponse.json(
-        { error: 'Image upload is not configured. Please setup Cloudflare R2.' },
-        { status: 503 }
-      );
-    }
+    const formData = await request.formData()
+    const files = formData.getAll('files') as File[]
 
-    const formData = await request.formData();
-    const file = formData.get('file') as File;
-    const studentId = formData.get('studentId') as string;
-
-    if (!file || !studentId) {
+    if (!files || files.length === 0) {
       return NextResponse.json(
-        { error: 'File and studentId are required' },
+        { success: false, error: 'No files provided' },
         { status: 400 }
-      );
+      )
     }
 
-    // Validate file
-    const validation = validateFile(file);
-    if (!validation.valid) {
-      return NextResponse.json(
-        { error: validation.error },
-        { status: 400 }
-      );
-    }
+    const uploadedUrls: string[] = []
 
-    // Convert file to buffer
-    const buffer = await fileToBuffer(file);
-    
-    // Generate unique filename
-    const fileName = generateFileName(file.name, studentId);
-    
-    // Upload to R2
-    const uploadResult = await uploadToR2(buffer, fileName, file.type);
-    
-    if (!uploadResult.success) {
-      return NextResponse.json(
-        { error: uploadResult.error },
-        { status: 500 }
-      );
+    for (const file of files) {
+      const bytes = await file.arrayBuffer()
+      const buffer = Buffer.from(bytes)
+      
+      const url = await uploadToR2(buffer, file.name, file.type)
+      uploadedUrls.push(url)
     }
 
     return NextResponse.json({
       success: true,
-      url: uploadResult.url,
-      fileName: fileName,
-    });
+      urls: uploadedUrls
+    })
 
   } catch (error) {
-    console.error('Upload API error:', error);
+    console.error('Upload error:', error)
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { success: false, error: 'Upload failed' },
       { status: 500 }
-    );
+    )
   }
 }
