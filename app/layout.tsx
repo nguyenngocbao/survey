@@ -8,8 +8,8 @@ const _nunito = Nunito({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Hệ thống Khảo sát - Đại học Sư phạm TP.HCM",
-  description: "Hệ thống khảo sát hồ sơ điện tử dành cho sinh viên Đại học Sư phạm Thành phố Hồ Chí Minh",
+  title: "Hệ thống Khảo sát",
+  description: "Hệ thống khảo sát hồ sơ điện tử",
 };
 
 export default function RootLayout({
@@ -24,25 +24,6 @@ export default function RootLayout({
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         {/* Fallback ICO for older browsers */}
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-        {/* PNG Favicons */}
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="32x32"
-          href="/favicon-32x32.png"
-        />
-        <link
-          rel="icon"
-          type="image/png"
-          sizes="16x16"
-          href="/favicon-16x16.png"
-        />
-        {/* Apple Touch Icon */}
-        <link
-          rel="apple-touch-icon"
-          sizes="180x180"
-          href="/apple-touch-icon.png"
-        />
         {/* Web App Manifest */}
         <link rel="manifest" href="/site.webmanifest" />
       </head>
