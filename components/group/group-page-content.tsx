@@ -1,10 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import { GroupHeaderCard } from "./group-header-card"
 import { GroupInfoForm } from "./group-info-form"
 import { GroupActivities } from "./group-activities"
-import { GroupStats } from "./group-stats"
 
 export function GroupPageContent() {
   return (
@@ -17,9 +15,6 @@ export function GroupPageContent() {
 
       {/* Section 3: Activities */}
       <GroupActivities />
-
-      {/* Section 4: Real-time Stats */}
-      <GroupStats />
     </div>
   )
 }

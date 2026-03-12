@@ -616,57 +616,19 @@ export function SurveyDetailModal({ isOpen, onClose, surveyId, surveyType }: Sur
             <h3 className="text-xl font-bold text-gray-800">Hoạt động 1: Bí ẩn dòng nước</h3>
           </div>
 
-          {/* Table A */}
-          {data.activity1.tableA?.initialCriteria && (
+          {/* Idea Prompt */}
+          {data.activity1.ideaPrompt && (
             <div className="bg-white/70 rounded-xl p-6 border border-purple-100">
-              <h4 className="text-lg font-semibold text-purple-800 mb-4">Bảng A - Tiêu chí ban đầu</h4>
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-purple-200">
-                  <thead>
-                    <tr className="bg-purple-100">
-                      <th className="border border-purple-200 p-3 text-left">STT</th>
-                      <th className="border border-purple-200 p-3 text-left">Tiêu chí</th>
-                      <th className="border border-purple-200 p-3 text-left">Căn cứ</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.activity1.tableA.initialCriteria.map((item: any, index: number) => (
-                      <tr key={index} className="hover:bg-purple-50">
-                        <td className="border border-purple-200 p-3">{item.stt}</td>
-                        <td className="border border-purple-200 p-3">{item.criterion}</td>
-                        <td className="border border-purple-200 p-3">{item.basis}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <Label className="text-base font-semibold text-purple-800 mb-3 block">💡 Ý tưởng Prompt</Label>
+              <Textarea value={data.activity1.ideaPrompt} readOnly className="bg-gray-50" rows={6} />
             </div>
           )}
 
-          {/* Table B */}
-          {data.activity1.tableB?.standardizedCriteria && (
+          {/* Images */}
+          {data.activity1.images && data.activity1.images.length > 0 && (
             <div className="bg-white/70 rounded-xl p-6 border border-purple-100">
-              <h4 className="text-lg font-semibold text-purple-800 mb-4">Bảng B - Tiêu chí kỹ thuật chuẩn hóa</h4>
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse border border-purple-200">
-                  <thead>
-                    <tr className="bg-purple-100">
-                      <th className="border border-purple-200 p-3 text-left">STT</th>
-                      <th className="border border-purple-200 p-3 text-left">Tiêu chí kỹ thuật</th>
-                      <th className="border border-purple-200 p-3 text-left">Mô tả</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.activity1.tableB.standardizedCriteria.map((item: any, index: number) => (
-                      <tr key={index} className="hover:bg-purple-50">
-                        <td className="border border-purple-200 p-3">{item.stt}</td>
-                        <td className="border border-purple-200 p-3">{item.technicalCriterion}</td>
-                        <td className="border border-purple-200 p-3">{item.description}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <Label className="text-base font-semibold text-purple-800 mb-3 block">📸 Hình ảnh minh họa</Label>
+              <ImageGallery images={data.activity1.images} readOnly />
             </div>
           )}
         </div>

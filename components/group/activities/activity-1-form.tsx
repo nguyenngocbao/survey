@@ -4,48 +4,20 @@ import { useState, useEffect } from "react"
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
 import { BackButton } from "@/components/ui/back-button"
 import { useNotification } from "@/components/ui/notification-popup"
+import { MultiImageUpload } from "@/components/ui/multi-image-upload"
 
 interface Activity1FormData {
-  tableA: {
-    initialCriteria: Array<{
-      stt: number
-      criterion: string
-      basis: string
-    }>
-  }
-  tableB: {
-    standardizedCriteria: Array<{
-      stt: number
-      technicalCriterion: string
-      description: string
-    }>
-  }
+  ideaPrompt: string
+  images: string[]
 }
 
 export function Activity1Form() {
   const { showError, showSuccess, showWarning, NotificationComponent } = useNotification()
   const [formData, setFormData] = useState<Activity1FormData>({
-    tableA: {
-      initialCriteria: Array(5)
-        .fill(null)
-        .map((_, index) => ({
-          stt: index + 1,
-          criterion: "",
-          basis: "",
-        })),
-    },
-    tableB: {
-      standardizedCriteria: Array(7)
-        .fill(null)
-        .map((_, index) => ({
-          stt: index + 1,
-          technicalCriterion: "",
-          description: "",
-        })),
-    },
+    ideaPrompt: "",
+    images: []
   })
   const [isLoading, setIsLoading] = useState(true)
   const [groupName, setGroupName] = useState<string | null>(null)
@@ -56,7 +28,6 @@ export function Activity1Form() {
       const storedGroupName = localStorage.getItem('groupName')
       
       if (!storedGroupName) {
-        // No group name, redirect to group page
         showWarning('Vui lòng chọn nhóm trước khi làm hoạt động', 'Thiếu thông tin nhóm')
         setTimeout(() => window.location.href = '/group', 2000)
         return
@@ -64,7 +35,6 @@ export function Activity1Form() {
 
       setGroupName(storedGroupName)
 
-      // Try to load existing activity data
       try {
         const response = await fetch(`/api/group-surveys/activities?groupName=${encodeURIComponent(storedGroupName)}&activityNumber=1`)
         
@@ -95,120 +65,19 @@ export function Activity1Form() {
     )
   }
 
-  const handleTableAChange = (
-    index: number,
-    field: "criterion" | "basis",
-    value: string
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      tableA: {
-        initialCriteria: prev.tableA.initialCriteria.map((item, i) =>
-          i === index ? { ...item, [field]: value } : item
-        ),
-      },
-    }))
-  }
-
-  const handleTableBChange = (
-    index: number,
-    field: "technicalCriterion" | "description",
-    value: string
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      tableB: {
-        standardizedCriteria: prev.tableB.standardizedCriteria.map((item, i) =>
-          i === index ? { ...item, [field]: value } : item
-        ),
-      },
-    }))
-  }
-
-  const addTableARow = () => {
-    if (formData.tableA.initialCriteria.length < 7) {
-      setFormData((prev) => ({
-        ...prev,
-        tableA: {
-          initialCriteria: [
-            ...prev.tableA.initialCriteria,
-            {
-              stt: prev.tableA.initialCriteria.length + 1,
-              criterion: "",
-              basis: "",
-            },
-          ],
-        },
-      }))
-    }
-  }
-
-  const removeTableARow = (index: number) => {
-    if (formData.tableA.initialCriteria.length > 3) {
-      setFormData((prev) => ({
-        ...prev,
-        tableA: {
-          initialCriteria: prev.tableA.initialCriteria
-            .filter((_, i) => i !== index)
-            .map((item, i) => ({ ...item, stt: i + 1 })),
-        },
-      }))
-    }
-  }
-
-  const addTableBRow = () => {
-    if (formData.tableB.standardizedCriteria.length < 10) {
-      setFormData((prev) => ({
-        ...prev,
-        tableB: {
-          standardizedCriteria: [
-            ...prev.tableB.standardizedCriteria,
-            {
-              stt: prev.tableB.standardizedCriteria.length + 1,
-              technicalCriterion: "",
-              description: "",
-            },
-          ],
-        },
-      }))
-    }
-  }
-
-  const removeTableBRow = (index: number) => {
-    if (formData.tableB.standardizedCriteria.length > 3) {
-      setFormData((prev) => ({
-        ...prev,
-        tableB: {
-          standardizedCriteria: prev.tableB.standardizedCriteria
-            .filter((_, i) => i !== index)
-            .map((item, i) => ({ ...item, stt: i + 1 })),
-        },
-      }))
-    }
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Validation for Table A
-    const incompleteTableA = formData.tableA.initialCriteria.some(
-      (item) => !item.criterion.trim() || !item.basis.trim()
-    )
-    if (incompleteTableA) {
-      showWarning("Vui lòng hoàn thành tất cả các tiêu chí và cơ sở lựa chọn", "Bảng A: Thiếu thông tin")
+    if (!formData.ideaPrompt.trim()) {
+      showWarning("Vui lòng nhập ý tưởng prompt", "Thiếu thông tin")
       return
     }
 
-    // Validation for Table B
-    const incompleteTableB = formData.tableB.standardizedCriteria.some(
-      (item) => !item.technicalCriterion.trim() || !item.description.trim()
-    )
-    if (incompleteTableB) {
-      showWarning("Vui lòng hoàn thành tất cả tiêu chí kỹ thuật và mô tả", "Bảng B: Thiếu thông tin")
+    if (formData.images.length === 0) {
+      showWarning("Vui lòng upload ít nhất 1 hình ảnh", "Thiếu hình ảnh")
       return
     }
 
-    // Get group name from localStorage
     const currentGroupName = groupName || localStorage.getItem('groupName')
     if (!currentGroupName) {
       showError('Không tìm thấy thông tin nhóm. Vui lòng quay lại trang nhóm.', 'Lỗi nhóm')
@@ -243,11 +112,55 @@ export function Activity1Form() {
     }
   }
 
+  const criteria = [
+    {
+      number: 1,
+      title: "Khả năng nổi và cân bằng",
+      description: "Mô hình nổi ổn định, không bị nghiêng hoặc lật khi thử nghiệm trên nước.",
+      color: "from-cyan-500 to-cyan-600"
+    },
+    {
+      number: 2,
+      title: "Tính kín nước và bền vững",
+      description: "Các mối ghép chắc chắn, không để nước tràn vào trong khoang.",
+      color: "from-green-500 to-green-600"
+    },
+    {
+      number: 3,
+      title: "Cấu trúc kỹ thuật hợp lý",
+      description: "Thiết kế thân, đáy, mạn thuyền cân đối, đảm bảo khả năng chịu lực và vận hành.",
+      color: "from-yellow-500 to-yellow-600"
+    },
+    {
+      number: 4,
+      title: "Ứng dụng AI trong thiết kế",
+      description: "Sử dụng hiệu quả các công cụ AI trong các bước thiết kế.",
+      color: "from-purple-500 to-purple-600"
+    },
+    {
+      number: 5,
+      title: "Tính sáng tạo và thẩm mỹ",
+      description: "Có yếu tố mới, đẹp mắt, phù hợp mục tiêu sử dụng và thân thiện với môi trường.",
+      color: "from-pink-500 to-pink-600"
+    },
+    {
+      number: 6,
+      title: "Hiệu quả hoạt động thực tế",
+      description: "Thuyền di chuyển hoặc vận hành được trên nước, đạt tiêu chí 'nổi - ổn định - an toàn'.",
+      color: "from-orange-500 to-orange-600"
+    },
+    {
+      number: 7,
+      title: "Trình bày và báo cáo",
+      description: "Hồ sơ thiết kế rõ ràng, thuyết minh mạch lạc, thể hiện được tư duy kỹ thuật.",
+      color: "from-blue-500 to-blue-600"
+    }
+  ]
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50">
       <NotificationComponent />
       <div className="container mx-auto px-4 py-8 max-w-6xl">
-        {/* Back Button */}
         <BackButton href="/group" />
 
         {/* Header */}
@@ -262,166 +175,76 @@ export function Activity1Form() {
           </div>
         </Card>
 
-
-
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Table A: Initial Criteria */}
-          <Card className="p-6">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-blue-600 mb-2">
-                A. Tiêu chí ban đầu của nhóm
-              </h2>
-            </div>
-
-            <div className="space-y-4">
-              {/* Table Header */}
-              <div className="grid grid-cols-12 gap-4 font-semibold text-sm text-gray-700 pb-3 border-b-2 border-gray-200">
-                <div className="col-span-1 text-center">STT</div>
-                <div className="col-span-5">Tiêu chí kỹ thuật</div>
-                <div className="col-span-5">Cơ sở lựa chọn</div>
-                <div className="col-span-1 text-center">Thao tác</div>
-              </div>
-
-              {/* Table Rows */}
-              {formData.tableA.initialCriteria.map((item, index) => (
-                <div key={index} className="grid grid-cols-12 gap-4 items-start">
-                  <div className="col-span-1 flex items-center justify-center h-10 bg-blue-100 rounded-lg text-blue-700 font-semibold">
-                    {item.stt}
-                  </div>
-                  <div className="col-span-5">
-                    <Input
-                      placeholder="Nhập tiêu chí thiết kế..."
-                      value={item.criterion}
-                      onChange={(e) =>
-                        handleTableAChange(index, "criterion", e.target.value)
-                      }
-                      required
-                      className="h-10"
-                    />
-                  </div>
-                  <div className="col-span-5">
-                    <Input
-                      placeholder="Giải thích tại sao chọn tiêu chí này..."
-                      value={item.basis}
-                      onChange={(e) =>
-                        handleTableAChange(index, "basis", e.target.value)
-                      }
-                      required
-                      className="h-10"
-                    />
-                  </div>
-                  <div className="col-span-1 flex justify-center">
-                    {formData.tableA.initialCriteria.length > 3 && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeTableARow(index)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 h-10 w-10 p-0"
-                      >
-                        ×
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ))}
-
-              {/* Add Row Button */}
-              {formData.tableA.initialCriteria.length < 7 && (
-                <div className="flex justify-center pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={addTableARow}
-                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 border-blue-300"
-                  >
-                    + Thêm tiêu chí
-                  </Button>
-                </div>
-              )}
-            </div>
-          </Card>
-
-          {/* Table B: Standardized Criteria */}
+          {/* Tiêu chí đánh giá */}
           <Card className="p-6">
             <div className="mb-6">
               <h2 className="text-2xl font-bold text-violet-600 mb-2">
-                B. Bộ tiêu chí thống nhất của lớp (phiên bản chính thức)
+                📋 Tiêu chí đánh giá
               </h2>
+              <p className="text-gray-600 text-sm">
+                Các tiêu chí đánh giá sản phẩm thiết kế của nhóm
+              </p>
             </div>
-
-            <div className="space-y-4">
-              {/* Table Header */}
-              <div className="grid grid-cols-12 gap-4 font-semibold text-sm text-gray-700 pb-3 border-b-2 border-gray-200">
-                <div className="col-span-1 text-center">STT</div>
-                <div className="col-span-4">Tiêu chí kỹ thuật</div>
-                <div className="col-span-6">Mô tả</div>
-                <div className="col-span-1 text-center">Thao tác</div>
-              </div>
-
-              {/* Table Rows */}
-              {formData.tableB.standardizedCriteria.map((item, index) => (
-                <div key={index} className="grid grid-cols-12 gap-4 items-start">
-                  <div className="col-span-1 flex items-center justify-center h-10 bg-violet-100 rounded-lg text-violet-700 font-semibold">
-                    {item.stt}
+            
+            <div className="space-y-3">
+              {criteria.map((criterion) => (
+                <div key={criterion.number} className="flex gap-3 p-4 bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg border border-violet-100 hover:shadow-md transition-shadow">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-violet-600 flex items-center justify-center text-white text-sm font-bold">
+                    {criterion.number}
                   </div>
-                  <div className="col-span-4">
-                    <Input
-                      placeholder="Tiêu chí kỹ thuật chuẩn..."
-                      value={item.technicalCriterion}
-                      onChange={(e) =>
-                        handleTableBChange(
-                          index,
-                          "technicalCriterion",
-                          e.target.value
-                        )
-                      }
-                      required
-                      className="h-10"
-                    />
-                  </div>
-                  <div className="col-span-6">
-                    <Textarea
-                      rows={2}
-                      placeholder="Mô tả chi tiết tiêu chí..."
-                      value={item.description}
-                      onChange={(e) =>
-                        handleTableBChange(index, "description", e.target.value)
-                      }
-                      required
-                      className="resize-none"
-                    />
-                  </div>
-                  <div className="col-span-1 flex justify-center">
-                    {formData.tableB.standardizedCriteria.length > 3 && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeTableBRow(index)}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 h-10 w-10 p-0"
-                      >
-                        ×
-                      </Button>
-                    )}
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-800 mb-1">
+                      {criterion.title}
+                    </h3>
+                    <p className="text-sm text-gray-600 leading-relaxed">
+                      {criterion.description}
+                    </p>
                   </div>
                 </div>
               ))}
-
-              {/* Add Row Button */}
-              {formData.tableB.standardizedCriteria.length < 10 && (
-                <div className="flex justify-center pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={addTableBRow}
-                    className="text-violet-600 hover:text-violet-700 hover:bg-violet-50 border-violet-300"
-                  >
-                    + Thêm tiêu chí
-                  </Button>
-                </div>
-              )}
             </div>
+          </Card>
+
+          {/* Ô nhập prompt ý tưởng */}
+          <Card className="p-6">
+            <div className="mb-4">
+              <h2 className="text-2xl font-bold text-violet-600 mb-2">
+                💡 Ý tưởng Prompt
+              </h2>
+              <p className="text-gray-600 text-sm">
+                Nhập prompt ý tưởng thiết kế của nhóm bạn
+              </p>
+            </div>
+            
+            <Textarea
+              rows={6}
+              placeholder="Ví dụ: Thiết kế một chiếc thuyền nhỏ có khả năng nổi tốt, cân bằng, và an toàn cho trẻ em sử dụng trong mùa nước nổi..."
+              value={formData.ideaPrompt}
+              onChange={(e) => setFormData(prev => ({ ...prev, ideaPrompt: e.target.value }))}
+              required
+              className="resize-none text-base"
+            />
+          </Card>
+
+          {/* Upload hình ảnh */}
+          <Card className="p-6">
+            <div className="mb-4">
+              <h2 className="text-2xl font-bold text-violet-600 mb-2">
+                📸 Hình ảnh minh họa
+              </h2>
+              <p className="text-gray-600 text-sm">
+                Upload hình ảnh thiết kế, bản vẽ hoặc sản phẩm của nhóm (tối đa 10 ảnh)
+              </p>
+            </div>
+            
+            <MultiImageUpload
+              label="Hình ảnh"
+              value={formData.images}
+              onChange={(urls) => setFormData(prev => ({ ...prev, images: urls }))}
+              studentId={groupName || 'group'}
+              maxImages={10}
+            />
           </Card>
 
           {/* Submit Button */}

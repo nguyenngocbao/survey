@@ -4,28 +4,23 @@ import { uploadToR2 } from '@/lib/r2'
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
-    const files = formData.getAll('files') as File[]
-
-    if (!files || files.length === 0) {
+    const file = formData.get('file') as File
+    
+    if (!file) {
       return NextResponse.json(
-        { success: false, error: 'No files provided' },
+        { success: false, error: 'No file provided' },
         { status: 400 }
       )
     }
 
-    const uploadedUrls: string[] = []
-
-    for (const file of files) {
-      const bytes = await file.arrayBuffer()
-      const buffer = Buffer.from(bytes)
-      
-      const url = await uploadToR2(buffer, file.name, file.type)
-      uploadedUrls.push(url)
-    }
+    const bytes = await file.arrayBuffer()
+    const buffer = Buffer.from(bytes)
+    
+    const url = await uploadToR2(buffer, file.name, file.type)
 
     return NextResponse.json({
       success: true,
-      urls: uploadedUrls
+      url: url
     })
 
   } catch (error) {

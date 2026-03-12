@@ -12,7 +12,7 @@ interface ImageFile {
 }
 
 interface ImageGalleryProps {
-  images: ImageFile[]
+  images: (ImageFile | string)[]
   title?: string
   onRemove?: (index: number) => void
   readOnly?: boolean
@@ -32,7 +32,19 @@ export function ImageGallery({ images, title, onRemove, readOnly = false }: Imag
     )
   }
 
-  const slides = images.map(file => ({
+  // Normalize images to ImageFile format
+  const normalizedImages = images.map((img, index) => {
+    if (typeof img === 'string') {
+      return {
+        name: `Image ${index + 1}`,
+        url: img,
+        type: 'image'
+      }
+    }
+    return img
+  })
+
+  const slides = normalizedImages.map(file => ({
     src: file.url,
     alt: file.name,
     title: file.name
@@ -43,7 +55,7 @@ export function ImageGallery({ images, title, onRemove, readOnly = false }: Imag
       <div className="space-y-2">
         {title && <p className="text-sm font-medium text-gray-700">{title}</p>}
         <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-          {images.map((file, index) => (
+          {normalizedImages.map((file, index) => (
             <div key={index} className="group relative">
               <div
                 onClick={() => {

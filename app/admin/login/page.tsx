@@ -162,21 +162,6 @@ export default function AdminLoginPage() {
               )}
             </Button>
           </form>
-
-          {/* Info */}
-          <div className="text-center">
-            <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
-              <p className="text-sm text-blue-700">
-                <strong>Thông tin đăng nhập mặc định:</strong>
-              </p>
-              <p className="text-sm text-blue-600 mt-1">
-                Tên đăng nhập: <code className="bg-blue-100 px-2 py-1 rounded">admin</code>
-              </p>
-              <p className="text-sm text-blue-600">
-                Mật khẩu: <code className="bg-blue-100 px-2 py-1 rounded">admin123</code>
-              </p>
-            </div>
-          </div>
         </div>
       </Card>
       <NotificationComponent />
