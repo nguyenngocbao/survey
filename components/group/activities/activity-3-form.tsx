@@ -212,22 +212,6 @@ export default function Activity3Form() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Basic validation
-    if (!formData.section1.purposeContext.trim()) {
-      showError("Vui lòng nhập mục đích & bối cảnh", 'Thiếu thông tin')
-      return
-    }
-
-    if (!formData.section1.criteriaFunction.trim()) {
-      showError("Vui lòng nhập tiêu chí & chức năng", 'Thiếu thông tin')
-      return
-    }
-
-    if (!formData.section1.promptAndImage.trim()) {
-      showError("Vui lòng nhập prompt và minh họa", 'Thiếu thông tin')
-      return
-    }
-
     // Get group name from localStorage
     const currentGroupName = groupName || localStorage.getItem('groupName')
     if (!currentGroupName) {
@@ -289,128 +273,11 @@ export default function Activity3Form() {
 
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Section 1: Phát triển ý tưởng */}
-          <Card className="p-6">
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold text-indigo-600 mb-4">
-                1. Phát triển ý tưởng
-              </h3>
-
-              <div className="bg-indigo-50 p-4 rounded-lg space-y-4">
-                <p className="font-semibold text-gray-800">
-                  Prompt AI định hướng
-                </p>
-
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">
-                    Mục đích & bối cảnh:
-                  </Label>
-                  <Textarea
-                    value={formData.section1.purposeContext}
-                    onChange={(e) =>
-                      handleSection1Change("purposeContext", e.target.value)
-                    }
-                    rows={3}
-                    placeholder="Nhập mục đích và bối cảnh thiết kế..."
-                    required
-                    className="resize-none"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Nhập mục đích và bối cảnh thiết kế
-                  </p>
-                </div>
-
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">
-                    Tiêu chí & chức năng:
-                  </Label>
-                  <Textarea
-                    value={formData.section1.criteriaFunction}
-                    onChange={(e) =>
-                      handleSection1Change("criteriaFunction", e.target.value)
-                    }
-                    rows={3}
-                    placeholder="Nhập tiêu chí và chức năng thiết kế..."
-                    required
-                    className="resize-none"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Nhập tiêu chí và chức năng thiết kế
-                  </p>
-                </div>
-
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">
-                    Prompt và minh họa (Soạn prompt AI và kèm hình ảnh ý tưởng):
-                  </Label>
-                  <Textarea
-                    value={formData.section1.promptAndImage}
-                    onChange={(e) =>
-                      handleSection1Change("promptAndImage", e.target.value)
-                    }
-                    rows={4}
-                    placeholder="Nhập prompt AI đầy đủ và mô tả hình ảnh ý tưởng..."
-                    required
-                    className="resize-none"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Nhập prompt AI đầy đủ và mô tả hình ảnh ý tưởng
-                  </p>
-                </div>
-
-                <div>
-                  <Label className="text-sm font-medium mb-2 block">
-                    Tải lên hình ảnh ý tưởng:
-                  </Label>
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    disabled={isUploading}
-                    onChange={async (e) => {
-                      const uploadedFiles = await uploadFilesImmediately(e.target.files)
-                      if (uploadedFiles.length > 0) {
-                        handleSection1Change("ideaImages", [...formData.section1.ideaImages, ...uploadedFiles])
-                      }
-                      e.target.value = '' // Reset input
-                    }}
-                    className="mt-1"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Chấp nhận: JPG, PNG. Có thể tải nhiều ảnh
-                  </p>
-                  
-                  {/* Preview uploaded images */}
-                  {formData.section1.ideaImages.length > 0 && (
-                    <div className="mt-4">
-                      <ImageGallery 
-                        images={formData.section1.ideaImages}
-                        onRemove={(index) => {
-                          const newImages = formData.section1.ideaImages.filter((_, i) => i !== index)
-                          handleSection1Change("ideaImages", newImages)
-                        }}
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleSection1Change("ideaImages", [])}
-                        className="mt-2"
-                      >
-                        Xóa tất cả
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </Card>
-
           {/* Section 2: Dựng mô hình 3D và tạo bản vẽ 2D */}
           <Card className="p-6">
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-indigo-600 mb-4">
-                2. Dựng mô hình 3D và tạo bản vẽ 2D
+                1. Dựng mô hình 3D và tạo bản vẽ 2D
               </h3>
 
               <div>
@@ -509,7 +376,7 @@ export default function Activity3Form() {
           <Card className="p-6">
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-indigo-600 mb-4">
-                3. Chuyển sang bản vẽ CAD
+                2. Chuyển sang bản vẽ CAD
               </h3>
 
               <div>
@@ -563,7 +430,7 @@ export default function Activity3Form() {
           <Card className="p-6">
             <div className="space-y-4">
               <h3 className="text-xl font-bold text-indigo-600 mb-4">
-                4. Bảng tự đánh giá
+                3. Bảng tự đánh giá
               </h3>
 
               <div className="overflow-x-auto">

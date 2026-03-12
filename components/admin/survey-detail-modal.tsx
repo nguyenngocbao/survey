@@ -624,11 +624,35 @@ export function SurveyDetailModal({ isOpen, onClose, surveyId, surveyType }: Sur
             </div>
           )}
 
-          {/* Images */}
-          {data.activity1.images && data.activity1.images.length > 0 && (
+          {/* 3D Images */}
+          {data.activity1.images3D && data.activity1.images3D.length > 0 && (
             <div className="bg-white/70 rounded-xl p-6 border border-purple-100">
-              <Label className="text-base font-semibold text-purple-800 mb-3 block">📸 Hình ảnh minh họa</Label>
-              <ImageGallery images={data.activity1.images} readOnly />
+              <Label className="text-base font-semibold text-purple-800 mb-3 block">📸 Hình ảnh 3D - Meshy AI</Label>
+              <ImageGallery images={data.activity1.images3D} readOnly />
+            </div>
+          )}
+
+          {/* Front View Images */}
+          {data.activity1.frontViewImages && data.activity1.frontViewImages.length > 0 && (
+            <div className="bg-white/70 rounded-xl p-6 border border-blue-100">
+              <Label className="text-base font-semibold text-blue-800 mb-3 block">📐 Hình chiếu đứng</Label>
+              <ImageGallery images={data.activity1.frontViewImages} readOnly />
+            </div>
+          )}
+
+          {/* Top View Images */}
+          {data.activity1.topViewImages && data.activity1.topViewImages.length > 0 && (
+            <div className="bg-white/70 rounded-xl p-6 border border-green-100">
+              <Label className="text-base font-semibold text-green-800 mb-3 block">📏 Hình chiếu bằng</Label>
+              <ImageGallery images={data.activity1.topViewImages} readOnly />
+            </div>
+          )}
+
+          {/* Side View Images */}
+          {data.activity1.sideViewImages && data.activity1.sideViewImages.length > 0 && (
+            <div className="bg-white/70 rounded-xl p-6 border border-orange-100">
+              <Label className="text-base font-semibold text-orange-800 mb-3 block">📊 Hình chiếu cạnh</Label>
+              <ImageGallery images={data.activity1.sideViewImages} readOnly />
             </div>
           )}
         </div>

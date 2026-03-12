@@ -10,14 +10,20 @@ import { MultiImageUpload } from "@/components/ui/multi-image-upload"
 
 interface Activity1FormData {
   ideaPrompt: string
-  images: string[]
+  images3D: string[]
+  frontViewImages: string[]
+  topViewImages: string[]
+  sideViewImages: string[]
 }
 
 export function Activity1Form() {
   const { showError, showSuccess, showWarning, NotificationComponent } = useNotification()
   const [formData, setFormData] = useState<Activity1FormData>({
     ideaPrompt: "",
-    images: []
+    images3D: [],
+    frontViewImages: [],
+    topViewImages: [],
+    sideViewImages: []
   })
   const [isLoading, setIsLoading] = useState(true)
   const [groupName, setGroupName] = useState<string | null>(null)
@@ -73,8 +79,23 @@ export function Activity1Form() {
       return
     }
 
-    if (formData.images.length === 0) {
-      showWarning("Vui lòng upload ít nhất 1 hình ảnh", "Thiếu hình ảnh")
+    if (formData.images3D.length === 0) {
+      showWarning("Vui lòng upload ít nhất 1 hình ảnh 3D", "Thiếu hình ảnh")
+      return
+    }
+
+    if (formData.frontViewImages.length === 0) {
+      showWarning("Vui lòng upload ít nhất 1 hình chiếu đứng", "Thiếu hình ảnh")
+      return
+    }
+
+    if (formData.topViewImages.length === 0) {
+      showWarning("Vui lòng upload ít nhất 1 hình chiếu bằng", "Thiếu hình ảnh")
+      return
+    }
+
+    if (formData.sideViewImages.length === 0) {
+      showWarning("Vui lòng upload ít nhất 1 hình chiếu cạnh", "Thiếu hình ảnh")
       return
     }
 
@@ -227,23 +248,83 @@ export function Activity1Form() {
             />
           </Card>
 
-          {/* Upload hình ảnh */}
+          {/* Upload hình ảnh 3D */}
           <Card className="p-6">
             <div className="mb-4">
               <h2 className="text-2xl font-bold text-violet-600 mb-2">
-                📸 Hình ảnh minh họa
+                📸 Hình ảnh 3D - Meshy AI
               </h2>
               <p className="text-gray-600 text-sm">
-                Upload hình ảnh thiết kế, bản vẽ hoặc sản phẩm của nhóm (tối đa 10 ảnh)
+                Upload hình ảnh mô hình 3D từ Meshy AI (tối đa 10 ảnh)
               </p>
             </div>
             
             <MultiImageUpload
-              label="Hình ảnh"
-              value={formData.images}
-              onChange={(urls) => setFormData(prev => ({ ...prev, images: urls }))}
+              label="Hình ảnh 3D"
+              value={formData.images3D}
+              onChange={(urls) => setFormData(prev => ({ ...prev, images3D: urls }))}
               studentId={groupName || 'group'}
               maxImages={10}
+            />
+          </Card>
+
+          {/* Upload hình chiếu đứng */}
+          <Card className="p-6">
+            <div className="mb-4">
+              <h2 className="text-2xl font-bold text-blue-600 mb-2">
+                📐 Hình chiếu đứng
+              </h2>
+              <p className="text-gray-600 text-sm">
+                Upload hình chiếu đứng (Front View) của mô hình (tối đa 5 ảnh)
+              </p>
+            </div>
+            
+            <MultiImageUpload
+              label="Hình chiếu đứng"
+              value={formData.frontViewImages}
+              onChange={(urls) => setFormData(prev => ({ ...prev, frontViewImages: urls }))}
+              studentId={groupName || 'group'}
+              maxImages={5}
+            />
+          </Card>
+
+          {/* Upload hình chiếu bằng */}
+          <Card className="p-6">
+            <div className="mb-4">
+              <h2 className="text-2xl font-bold text-green-600 mb-2">
+                📏 Hình chiếu bằng
+              </h2>
+              <p className="text-gray-600 text-sm">
+                Upload hình chiếu bằng (Top View) của mô hình (tối đa 5 ảnh)
+              </p>
+            </div>
+            
+            <MultiImageUpload
+              label="Hình chiếu bằng"
+              value={formData.topViewImages}
+              onChange={(urls) => setFormData(prev => ({ ...prev, topViewImages: urls }))}
+              studentId={groupName || 'group'}
+              maxImages={5}
+            />
+          </Card>
+
+          {/* Upload hình chiếu cạnh */}
+          <Card className="p-6">
+            <div className="mb-4">
+              <h2 className="text-2xl font-bold text-orange-600 mb-2">
+                📊 Hình chiếu cạnh
+              </h2>
+              <p className="text-gray-600 text-sm">
+                Upload hình chiếu cạnh (Side View) của mô hình (tối đa 5 ảnh)
+              </p>
+            </div>
+            
+            <MultiImageUpload
+              label="Hình chiếu cạnh"
+              value={formData.sideViewImages}
+              onChange={(urls) => setFormData(prev => ({ ...prev, sideViewImages: urls }))}
+              studentId={groupName || 'group'}
+              maxImages={5}
             />
           </Card>
 
