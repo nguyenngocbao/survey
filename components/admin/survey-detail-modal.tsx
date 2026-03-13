@@ -569,6 +569,22 @@ export function SurveyDetailModal({ isOpen, onClose, surveyId, surveyType }: Sur
             <Input value={data.groupInfo?.groupCode || ''} readOnly className="mt-1 bg-gray-50" />
           </div>
         </div>
+
+        {/* Danh sách thành viên */}
+        {data.groupInfo?.members && data.groupInfo.members.length > 0 && (
+          <div className="mt-4">
+            <Label className="text-base font-semibold text-gray-800 mb-2 block">Danh sách thành viên:</Label>
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+              <div className="flex flex-wrap gap-2">
+                {data.groupInfo.members.map((member: string, index: number) => (
+                  <Badge key={index} variant="secondary" className="bg-violet-100 text-violet-800 border-violet-200">
+                    {index + 1}. {member}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Activity Progress */}

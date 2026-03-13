@@ -6,6 +6,7 @@ const GroupInfoSchema = new mongoose.Schema({
   groupCode: { type: String, required: true }, // Mã nhóm
   leaderName: { type: String, required: true },
   memberCount: { type: Number, required: true },
+  members: [{ type: String }], // Danh sách tên thành viên
   class: { type: String, required: true },
   subject: { type: String, required: true }, // Môn học
   groupAvatar: { type: String }, // URL ảnh nhóm

@@ -22,6 +22,7 @@ interface Survey {
     groupName?: string
     leaderName: string
     memberCount: number
+    members?: string[]
     class: string
     subject: string
   }
@@ -320,6 +321,11 @@ export default function AdminGroupSurveysPage() {
                       <p className="text-sm text-gray-600">
                         Trưởng nhóm: {survey.groupInfo?.leaderName} - {survey.groupInfo?.memberCount} thành viên
                       </p>
+                      {survey.groupInfo?.members && survey.groupInfo.members.length > 0 && (
+                        <p className="text-sm text-gray-600">
+                          Thành viên: {survey.groupInfo.members.join(', ')}
+                        </p>
+                      )}
                       <p className="text-sm text-gray-600">
                         {survey.groupInfo?.class} - {survey.groupInfo?.subject}
                       </p>

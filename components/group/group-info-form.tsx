@@ -43,6 +43,12 @@ export function GroupInfoForm({ onGroupCreated }: GroupInfoFormProps) {
           setGroupName(groupInfo.groupName || "")
           setClassName(groupInfo.class || "")
           setLeaderName(groupInfo.leaderName || "")
+          
+          // Load danh sách thành viên (bỏ trưởng nhóm vì đã có riêng)
+          if (groupInfo.members && Array.isArray(groupInfo.members)) {
+            const otherMembers = groupInfo.members.slice(1) // Bỏ phần tử đầu (trưởng nhóm)
+            setMembers(otherMembers.length > 0 ? otherMembers : [""])
+          }
         }
       }
     } catch (error) {
@@ -72,6 +78,12 @@ export function GroupInfoForm({ onGroupCreated }: GroupInfoFormProps) {
             setGroupName(groupInfo.groupName || "")
             setClassName(groupInfo.class || "")
             setLeaderName(groupInfo.leaderName || "")
+            
+            // Load danh sách thành viên (bỏ trưởng nhóm vì đã có riêng)
+            if (groupInfo.members && Array.isArray(groupInfo.members)) {
+              const otherMembers = groupInfo.members.slice(1) // Bỏ phần tử đầu (trưởng nhóm)
+              setMembers(otherMembers.length > 0 ? otherMembers : [""])
+            }
           }
           
           // Close popup and refresh page to show activities
@@ -129,6 +141,7 @@ export function GroupInfoForm({ onGroupCreated }: GroupInfoFormProps) {
       groupName,
       leaderName,
       memberCount: allMembers.length,
+      members: allMembers, // Lưu danh sách tên thành viên
       class: className,
       subject: 'Công nghệ', // Default subject
       groupAvatar: ''

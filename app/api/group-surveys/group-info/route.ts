@@ -8,6 +8,7 @@ const GroupInfoSchema = new mongoose.Schema({
   groupCode: { type: String, required: true },
   leaderName: { type: String, required: true },
   memberCount: { type: Number, required: true },
+  members: [{ type: String }], // Danh sách tên thành viên
   class: { type: String, required: true },
   subject: { type: String, required: true },
   groupAvatar: { type: String, default: '' },
@@ -46,7 +47,7 @@ export async function POST(request: NextRequest) {
     await connectDB()
     
     const body = await request.json()
-    const { groupName, leaderName, memberCount, class: className, subject, groupAvatar } = body
+    const { groupName, leaderName, memberCount, members, class: className, subject, groupAvatar } = body
 
     // Validation
     if (!groupName || !leaderName || !memberCount || !className || !subject) {
@@ -66,6 +67,7 @@ export async function POST(request: NextRequest) {
         groupCode: groupName,
         leaderName,
         memberCount,
+        members: members || [], // Lưu danh sách thành viên
         class: className,
         subject,
         groupAvatar: groupAvatar || '',
@@ -79,6 +81,7 @@ export async function POST(request: NextRequest) {
           groupCode: groupName,
           leaderName,
           memberCount,
+          members: members || [], // Lưu danh sách thành viên
           class: className,
           subject,
           groupAvatar: groupAvatar || '',
